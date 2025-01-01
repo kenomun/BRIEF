@@ -1,0 +1,63 @@
+// Prisma Schema
+
+datasource db {
+  provider = "postgresql"  // O cualquier otro proveedor de base de datos (MySQL, SQLite, etc.)
+  url      = env("DATABASE_URL")  // Utiliza el URL configurado en .env
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Definir las tablas
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   // Puedes agregar roles como admin, superadmin, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Professor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  subject   String   // Asignatura en inglés
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Question {
+  id                 Int       @id @default(autoincrement())
+  questionText       String    // Encabezado de la pregunta
+  option1            String    // Alternativa 1
+  option2            String    // Alternativa 2
+  option3            String    // Alternativa 3
+  option4            String    // Alternativa 4
+  correctOption     Int       // 1 para alternativa 1, 2 para alternativa 2, etc.
+  educationalIndicator String // Indicador educativo
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Student {
+  id         Int      @id @default(autoincrement())
+  name       String
+  school     String   // Colegio en inglés
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  results    Result[]
+}
+
+model Result {
+  id               Int       @id @default(autoincrement())
+  studentId        Int
+  student          Student   @relation(fields: [studentId], references: [id])
+  totalScore       Int       // Puntaje total
+  contentScores    Json      // Puntaje por contenido (almacenado como JSON)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
