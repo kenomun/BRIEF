@@ -3,8 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const adminRoutes = require('./src/routes/adminRoutes');
 const professorRoutes = require('./src/routes/professorRoutes');
-const studentRoutes = require('./src/routes/studentroutes')
-const questionRoutes = require('./src/routes/questionRoutes')
+const studentRoutes = require('./src/routes/studentroutes');
+const questionRoutes = require('./src/routes/questionRoutes');
+const resultRoutes = require('./src/routes/resultRoutes');
 
 // Inicializa la app
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api', adminRoutes);
 app.use('/api', professorRoutes);
 app.use('/api', studentRoutes); 
 app.use('/api', questionRoutes);
+app.use('/api', resultRoutes);
 
 // Levantar el servidor
 const PORT = process.env.PORT || 5000;
