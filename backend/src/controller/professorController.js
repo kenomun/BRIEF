@@ -7,7 +7,7 @@ const createProfessor = async (req, res) => {
       const { name, subject } = req.body;
 
       // Validar datos
-    if (!name || !subject) {
+      if (!name || !subject) {
         return res.status(400).json({ message: 'Todos los campos son requeridos' });
       }
 
