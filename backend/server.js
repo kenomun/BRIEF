@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const adminRoutes = require('./src/routes/adminRoutes');
 
 // Inicializa la app
 const app = express();
@@ -9,10 +10,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Rutas de prueba
 app.get('/', (req, res) => {
-  res.send('¡Servidor funcionando!');
+  res.send('Bienvenido a la API de ExamPass');
 });
+
+// Rutas
+app.use('/api/admins', adminRoutes);
 
 // Levantar el servidor
 const PORT = process.env.PORT || 5000;
