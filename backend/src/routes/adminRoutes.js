@@ -3,10 +3,10 @@ const router = express.Router();
 const adminController = require('../controller/adminController');
 
 // Rutas CRUD para Admin
-router.post('/', adminController.createAdmin);
-router.get('/', adminController.getAllAdmins);
-router.get('/:id', adminController.getAdminById);
-router.put('/:id', adminController.updateAdmin);
-router.delete('/:id', adminController.deleteAdmin);
+router.post('/admins', adminController.createAdmin);
+router.get('/admins', adminController.getAllAdmins);
+router.get('/admin/:id', adminController.getAdminById);
+router.put('/admin/:id', adminController.updateAdmin);
+router.delete('/admin/:id', adminController.deleteAdmin);
 
 module.exports = router;
