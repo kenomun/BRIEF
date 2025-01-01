@@ -30,7 +30,7 @@ const swaggerOptions = {
       description: 'Documentación de la API para el sistema ExamPass',
     },
   },
-  apis: ['./src/routes/*.js'], // Archivos donde están las rutas de tu API
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
