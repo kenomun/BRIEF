@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const adminRoutes = require('./src/routes/adminRoutes');
+const professorRoutes = require('./src/routes/professorRoutes');
+const studentRoutes = require('./src/routes/studentroutes')
 
 // Inicializa la app
 const app = express();
@@ -15,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 // Rutas
-app.use('/api/admins', adminRoutes);
+
 
 // Levantar el servidor
 const PORT = process.env.PORT || 5000;
