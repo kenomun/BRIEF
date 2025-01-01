@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 // Rutas
-
+app.use('/api/admins', adminRoutes);
 
 // Levantar el servidor
 const PORT = process.env.PORT || 5000;
