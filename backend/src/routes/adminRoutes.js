@@ -4,29 +4,49 @@ const adminController = require('../controller/adminController');
 
 /**
  * @swagger
- * /api/admins:
+ * components:
+ *   schemas:
+ *     Admin:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *         - name
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: El ID del administrador
+ *         email:
+ *           type: string
+ *           description: Correo electrónico del administrador
+ *         password:
+ *           type: string
+ *           description: Contraseña del administrador
+ *         name:
+ *           type: string
+ *           description: Nombre del administrador
+ */
+
+/**
+ * @swagger
+ * /admins:
  *   post:
  *     summary: Crear un nuevo administrador
  *     description: Crea un nuevo administrador en el sistema.
+ *     tags: [Admins]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: admin@example.com
- *               password:
- *                 type: string
- *                 example: securepassword123
- *               name:
- *                 type: string
- *                 example: Juan Perez
+ *             $ref: '#/components/schemas/Admin'
  *     responses:
  *       201:
  *         description: Administrador creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Admin'
  *       400:
  *         description: Campos inválidos
  *       500:
@@ -36,9 +56,10 @@ router.post('/admins', adminController.createAdmin);
 
 /**
  * @swagger
- * /api/admins:
+ * /admins:
  *   get:
  *     summary: Obtener todos los administradores
+ *     tags: [Admins]
  *     description: Obtiene una lista de todos los administradores registrados en el sistema.
  *     responses:
  *       200:
@@ -48,14 +69,7 @@ router.post('/admins', adminController.createAdmin);
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   email:
- *                     type: string
- *                   name:
- *                     type: string
+ *                 $ref: '#/components/schemas/Admin'
  *       500:
  *         description: Error en el servidor
  */
@@ -63,9 +77,10 @@ router.get('/admins', adminController.getAllAdmins);
 
 /**
  * @swagger
- * /api/admin/{id}:
+ * /admin/{id}:
  *   get:
  *     summary: Obtener un administrador por ID
+ *     tags: [Admins]
  *     description: Obtiene los detalles de un administrador específico utilizando su ID.
  *     parameters:
  *       - in: path
@@ -81,14 +96,7 @@ router.get('/admins', adminController.getAllAdmins);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                 email:
- *                   type: string
- *                 name:
- *                   type: string
+ *               $ref: '#/components/schemas/Admin'
  *       404:
  *         description: Administrador no encontrado
  *       500:
@@ -98,9 +106,10 @@ router.get('/admin/:id', adminController.getAdminById);
 
 /**
  * @swagger
- * /api/admin/{id}:
+ * /admin/{id}:
  *   put:
  *     summary: Actualizar administrador por ID
+ *     tags: [Admins]
  *     description: Actualiza la información de un administrador específico por su ID.
  *     parameters:
  *       - in: path
@@ -115,14 +124,7 @@ router.get('/admin/:id', adminController.getAdminById);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: updated@example.com
- *               name:
- *                 type: string
- *                 example: Juan Carlos Perez
+ *             $ref: '#/components/schemas/Admin'
  *     responses:
  *       200:
  *         description: Administrador actualizado exitosamente
@@ -137,9 +139,10 @@ router.put('/admin/:id', adminController.updateAdmin);
 
 /**
  * @swagger
- * /api/admin/{id}:
+ * /admin/{id}:
  *   delete:
  *     summary: Eliminar un administrador por ID
+ *     tags: [Admins]
  *     description: Elimina un administrador específico utilizando su ID.
  *     parameters:
  *       - in: path
@@ -160,4 +163,5 @@ router.put('/admin/:id', adminController.updateAdmin);
 router.delete('/admin/:id', adminController.deleteAdmin);
 
 module.exports = router;
+
 
