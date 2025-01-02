@@ -244,7 +244,7 @@ const getTestsBySubjectId = async (req, res) => {
 
 // Eliminar un test por ID con preguntas, respuestas y contenido
 const deleteTest = async (req, res) => {
-  const { id } = req.params;  // Obtener el id del test desde la URL
+  const { id } = req.params;
 
   try {
     

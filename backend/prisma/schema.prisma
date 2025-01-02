@@ -31,7 +31,7 @@ model Students {
   id          Int      @id @default(autoincrement())
   schoolName  String
   profileId   Int      @unique
-  Profile     Profiles @relation(fields: [profileId], references: [id])
+  Profile     Profiles @relation(fields: [profileId], references: [id], onDelete: CASCADE)
 }
 
 model Subjects {
