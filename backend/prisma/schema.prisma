@@ -10,63 +10,89 @@ generator client {
 }
 
 
-// Tabla de Administradores (Admin)
-model Admin {
+model Roles {
+  id          Int      @id @default(autoincrement())
+  description String
+  Profiles    Profiles[]
+}
+
+model Profiles {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  roleId   Int
+  Role     Roles    @relation(fields: [roleId], references: [id])
+  Students Students?
+  Results  Result[]
+  Subjects profileSubject[]
+}
+
+model Students {
+  id          Int      @id @default(autoincrement())
+  schoolName  String
+  profileId   Int      @unique
+  Profile     Profiles @relation(fields: [profileId], references: [id])
+}
+
+model Subjects {
+  id       Int              @id @default(autoincrement())
+  name     String
+  Tests    Test[]
+  Profiles profileSubject[]
+  Results  Result[]
+}
+
+model profileSubject {
   id        Int      @id @default(autoincrement())
+  profileId Int
+  subjectId Int
+  isDone    Boolean
+  Profile   Profiles @relation(fields: [profileId], references: [id])
+  Subject   Subjects @relation(fields: [subjectId], references: [id])
+
+  @@unique([profileId, subjectId])
+}
+
+model Test {
+  id        Int        @id @default(autoincrement())
   name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  subjectId Int
+  Subject   Subjects   @relation(fields: [subjectId], references: [id])
+  Questions Questions[]
 }
 
-// Tabla de Profesores (Professor)
-model Professor {
-  id        Int      @id @default(autoincrement())
-  name      String
-  subject   String   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  students  Student[]
+model Questions {
+  id        Int       @id @default(autoincrement())
+  description String
+  contentId   Int
+  testId      Int
+  Content     Content  @relation(fields: [contentId], references: [id])
+  Test        Test     @relation(fields: [testId], references: [id])
+  Answers     Answer[]
 }
 
-// Tabla de Preguntas (Question)
-model Question {
-  id                 Int       @id @default(autoincrement())
-  questionText       String    
-  option1            String    
-  option2            String    
-  option3            String   
-  option4            String    
-  correctOption     Int      
-  educationalIndicator String 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+model Content {
+  id          Int       @id @default(autoincrement())
+  description String
+  Questions   Questions[]
 }
 
-// Tabla de Estudiantes (Student)
-model Student {
-  id         Int      @id @default(autoincrement())
-  name       String
-  school     String   
-  email      String   @unique
-  password   String 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  results    Result[] 
-  professorId Int?     
-  professor  Professor? @relation(fields: [professorId], references: [id]) // Relación con el profesor
+model Answer {
+  id          Int       @id @default(autoincrement())
+  content     String
+  questionId  Int
+  isCorrect   Boolean
+  Question    Questions @relation(fields: [questionId], references: [id])
 }
 
-// Tabla de Resultados (Result) de los estudiantes en los exámenes
 model Result {
-  id               Int       @id @default(autoincrement())
-  studentId        Int
-  student          Student   @relation(fields: [studentId], references: [id])
-  totalScore       Int       
-  contentScores    Json     
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id           Int       @id @default(autoincrement())
+  contentScore Int
+  examScore    Int
+  profileId    Int
+  subjectId    Int
+  Profile      Profiles  @relation(fields: [profileId], references: [id])
+  Subject      Subjects  @relation(fields: [subjectId], references: [id])
 }
 
 
