@@ -4,7 +4,7 @@ const cors = require('cors');
 const adminRoutes = require('./src/routes/adminRoutes');
 const professorRoutes = require('./src/routes/professorRoutes');
 const studentRoutes = require('./src/routes/studentroutes');
-const questionRoutes = require('./src/routes/questionRoutes');
+const testRoutes = require('./src/routes/testRoutes');
 const resultRoutes = require('./src/routes/resultRoutes');
 
 // Inicializa la app
@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 app.use('/api', adminRoutes);
 app.use('/api', professorRoutes);
 app.use('/api', studentRoutes); 
-app.use('/api', questionRoutes);
+app.use('/api', testRoutes);
 app.use('/api', resultRoutes);
 
 // Levantar el servidor

@@ -6,12 +6,10 @@ const createAdmin = async (req, res) => {
   try {
     const { name, email, roleId } = req.body;
 
-    // Validar datos
     if (!name || !email || !roleId) {
       return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
 
-    // Verificar si el rol existe
     const role = await prisma.Roles.findUnique({
       where: { id: roleId },
     });
@@ -20,7 +18,6 @@ const createAdmin = async (req, res) => {
       return res.status(404).json({ message: 'Rol no encontrado' });
     }
 
-    // Crear un nuevo admin asociado al rol
     const newAdmin = await prisma.Profiles.create({
       data: {
         name,
@@ -75,7 +72,6 @@ const updateAdmin = async (req, res) => {
     const { id } = req.params;
     const { name, email, password, roleId } = req.body;
 
-    // Verificar si el rol existe antes de actualizar
     const role = await prisma.Roles.findUnique({
       where: { id: roleId },
     });

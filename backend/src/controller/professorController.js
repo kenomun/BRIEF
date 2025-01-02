@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 // Crear un nuevo profesor
 const createProfessor = async (req, res) => {
   try {
-    const { name, email, roleId, subjectIds } = req.body; // subjectIds es una lista de IDs de asignaturas
+    const { name, email, roleId, subjectIds } = req.body;
 
     // Validar datos
     if (!name || !email || !roleId || !subjectIds || subjectIds.length === 0) {
@@ -94,7 +94,6 @@ const updateProfessor = async (req, res) => {
     const { id } = req.params;
     const { name, email, subjectIds } = req.body;
 
-    // Validar datos
     if (!subjectIds || subjectIds.length === 0) {
       return res.status(400).json({ message: 'Debe proporcionar al menos una asignatura' });
     }
@@ -139,7 +138,6 @@ const deleteProfessor = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Eliminar las relaciones de las asignaturas asociadas al profesor
     await prisma.profileSubject.deleteMany({
       where: { profileId: parseInt(id) },
     });
