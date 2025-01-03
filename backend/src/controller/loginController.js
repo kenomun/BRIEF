@@ -1,19 +1,25 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { sendOk, badRequest } = require('../helpers/http') 
 
 // Obtener un usuario por su email (login)
 const getLoginByEmail = async (req, res) => {
+  console.log(`estoy en el controlador`)
     try {
       const { email } = req.params; 
+      console.log("emailController", email)
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: 'Email inválido o no proporcionado' });
+      }
       
       // Buscar al usuario en la base de datos por su email
-      const user = await prisma.Profiles.findUnique({
+      const user = await prisma.profiles.findUnique({
         where: { email: email },
         select: {
-          id: true,
-          name: true,
-          email: true,
-          roleId: true,
+            id: true,
+            name: true,
+            email: true,
+            roleId: true,
         },
       });
   
@@ -23,7 +29,7 @@ const getLoginByEmail = async (req, res) => {
       }
   
       // Si el usuario existe, devolver solo los campos requeridos
-      res.status(200).json(user);
+      return sendOk(res, 'usuario encontrado', user)
     } catch (error) {
       res.status(500).json({ error: 'Error al realizar login', details: error.message });
     }

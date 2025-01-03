@@ -35,8 +35,13 @@
       const loginWithGoogle = async (response) => {
       try {
         const user = decodeCredential(response.credential)
-        // const res = await axios.post('/users/login', { email: user.email })
+
+        const res = await fetch(`http://localhost:5000/api/login/${user.email}`);
+        const json = await res.json()
+        console.log(`res, ${json}`)
+
         const userData = res.data.data
+        console.log(userData)
         const imagen = user.picture
         const googleToken = response.credential
         if (res.status === 200) {
@@ -56,6 +61,7 @@
           // if(role ==3 ) router.push({name: ' '})
         }
       } catch (error) {
+        console.log(`error: ${error}`)
         if (error.response.status === 401) {
           // Usuario no registrado
           toast(error.response.data.msg, {
