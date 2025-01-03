@@ -6,7 +6,6 @@ const createTest = async (req, res) => {
   try {
     const { testName, subjectId, questions } = req.body;
 
-
     if (!testName || !subjectId || !questions || questions.length < 1) {
       return res.status(400).json({ message: 'Faltan datos: nombre del test, asignatura, y al menos una pregunta.' });
     }
@@ -25,8 +24,9 @@ const createTest = async (req, res) => {
               },
             });
 
-
-            return {  // Descripción de la pregunta
+            return { 
+              // Crear la pregunta, ahora incluyendo la propiedad 'question'
+              question: question.question, // Este es el campo que faltaba
               contentId: content.id,
               Answers: {
                 create: question.answers.map((answer) => ({
@@ -55,6 +55,7 @@ const createTest = async (req, res) => {
     res.status(500).json({ error: 'Error al crear el test', details: error.message });
   }
 };
+
 
 
 // Obtener todos los tests con preguntas, respuestas y contenido
