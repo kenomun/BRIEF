@@ -31,7 +31,7 @@ model Students {
   id          Int      @id @default(autoincrement())
   schoolName  String
   profileId   Int      @unique
-  Profile     Profiles @relation(fields: [profileId], references: [id], onDelete: CASCADE)
+  Profile     Profiles @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Subjects {
@@ -39,7 +39,6 @@ model Subjects {
   name     String
   Tests    Test[]
   Profiles profileSubject[]
-  Results  Result[]
 }
 
 model profileSubject {
@@ -59,6 +58,7 @@ model Test {
   subjectId Int
   Subject   Subjects   @relation(fields: [subjectId], references: [id])
   Questions Questions[] 
+  Results   Result[]
 }
 
 model Questions {
@@ -86,13 +86,14 @@ model Answer {
 }
 
 model Result {
-  id           Int       @id @default(autoincrement())
-  contentScore Int
-  examScore    Int
-  profileId    Int
-  subjectId    Int
-  Profile      Profiles  @relation(fields: [profileId], references: [id])
-  Subject      Subjects  @relation(fields: [subjectId], references: [id])
+  id         Int      @id @default(autoincrement())
+  profileId  Int
+  testId     Int
+  profile    Profiles @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  test       Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answers    Json
+  createdAt  DateTime @default(now())
 }
+
 
 
