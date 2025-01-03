@@ -1,6 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocs = require('./src/config/swaggerConfig'); 
+
 const adminRoutes = require('./src/routes/adminRoutes');
 const professorRoutes = require('./src/routes/professorRoutes');
 const studentRoutes = require('./src/routes/studentroutes');
@@ -13,6 +16,9 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(cors());
+
+// Swagger: Documentación de la API
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get('/', (req, res) => {
   res.send('Bienvenido a la API de ExamPass');
