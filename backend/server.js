@@ -6,6 +6,7 @@ const professorRoutes = require('./src/routes/professorRoutes');
 const studentRoutes = require('./src/routes/studentroutes');
 const testRoutes = require('./src/routes/testRoutes');
 const resultRoutes = require('./src/routes/resultRoutes');
+const loginRoutes = require('./src/routes/loginRoutes');
 
 // Inicializa la app
 const app = express();
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 });
 
 // Rutas
+app.use('/api', loginRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', professorRoutes);
 app.use('/api', studentRoutes); 
