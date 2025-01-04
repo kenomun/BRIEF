@@ -41,8 +41,7 @@
       entity: {
         type: Object,
         default: () => ({
-        name: '',
-        email: ''
+
         }),
       },
       formTitle: {
