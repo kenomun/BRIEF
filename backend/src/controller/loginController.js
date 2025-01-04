@@ -4,10 +4,8 @@ const { sendOk, badRequest } = require('../helpers/http')
 
 // Obtener un usuario por su email (login)
 const getLoginByEmail = async (req, res) => {
-  console.log(`estoy en el controlador`)
     try {
       const { email } = req.params; 
-      console.log("emailController", email)
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ message: 'Email inválido o no proporcionado' });
       }

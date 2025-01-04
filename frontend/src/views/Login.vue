@@ -11,6 +11,7 @@
   import { GoogleLogin, decodeCredential } from 'vue3-google-login'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/useStore.js'
+  import axios from 'axios'
 
   export default {
     components: {
@@ -22,26 +23,14 @@
         const router = useRouter();
    
       
-      // const loginWithGoogle = (response) => {
-      //   console.log(response)
-      //   const user = decodeCredential(response.credential)
-      //   console.log(user)
-      //   // alert('Redirecting to Google login...', user)
-      //   router.push({name: 'AdminDashboard' });
-
-      // }
-
-
       const loginWithGoogle = async (response) => {
       try {
         const user = decodeCredential(response.credential)
 
-        const res = await fetch(`http://localhost:5000/api/login/${user.email}`);
-        const json = await res.json()
-        console.log(`res, ${json}`)
+        const res = await axios.get(`http://localhost:5000/api/login/${user.email}`);
 
         const userData = res.data.data
-        console.log(userData)
+        console.log("userData", userData)
         const imagen = user.picture
         const googleToken = response.credential
         if (res.status === 200) {
@@ -50,15 +39,13 @@
             name: userData.name,
             token: userData.token,
             email: userData.email,
-            role: userData.role,
+            role: userData.roleId,
             picture: imagen,
             googleToken: googleToken
           })
 
-          router.push({ name: 'AdminDashboard' })
-          // if(role ==1 ) router.push({name: ' '})
-          // if(role ==2 ) router.push({name: ' '})
-          // if(role ==3 ) router.push({name: ' '})
+          if(userData.roleId ==2 ) router.push({name: 'AdminDashboard'})
+          if(userData.roleId ==3 ) router.push({name: 'StudentDashboard'})
         }
       } catch (error) {
         console.log(`error: ${error}`)
