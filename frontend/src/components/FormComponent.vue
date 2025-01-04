@@ -61,7 +61,6 @@
 
     methods: {
       handleSubmit() {
-        console.log('Datos a guardar:', { ...this.entity });
         this.$emit("save", { ...this.entity });
       },
     },

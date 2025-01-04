@@ -1,19 +1,20 @@
 <template>
     <div class="container mx-auto p-6">
-      <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de Administradores</h1>
+      <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de Profesores</h1>
       <FormButtonComponent
         class="mt-6"
-        buttonText="Crear Administrador"
-        formTitle="Nuevo Administrador"
-        formButtonText="Crear"
+        buttonText="Crear Profesor"
+        formTitle="Nuevo Profesor"
+        formButtonText="Crear Profesor"
         :fields="['name', 'email']"
         :entity="{}"
         @openForm="openFormcreate"
       />
       <Table
         class="mt-6"
-        :headers="['Nombre', 'Email']"
-        :rows="admins"
+        :headers="headers"
+        :rows="rows"
+        :actions="true"
         @edit="openFomrEdit"
         @delete="handleDelete"
       />
@@ -45,10 +46,10 @@
       <!-- Formulario de edición de administrador -->
       <FormComponent
         v-if="formModalVisible"
-        :entity="adminToEdit"
+        :entity="professorToEdit"
         :formTitle="formTitle"
         :formButtonText="formButtonText"
-        :fields="adminFields"
+        :fields="professorFields"
         @save="handleFormSave"
         @cancel="handleCancel"
       />
@@ -75,7 +76,9 @@
     },
     data() {
       return {
-        admins: [],
+        professors: [],
+        rows: [],
+        headers: [],
         adminToDelete: null,
         alertVisible: false,
         toastVisible: false,
@@ -84,9 +87,9 @@
         formModalVisible: false,
         formTitle: "",
         formButtonText: "",
-        adminToEdit: null,
+        professorToEdit: null,
         isEditing: false,
-        adminFields: [
+        professorFields: [
           { name: 'name', type: 'text', label: 'Nombre', placeholder: 'Nombre del administrador' },
           { name: 'email', type: 'email', label: 'Correo electrónico', placeholder: 'Email del administrador' },
         ],
@@ -95,33 +98,79 @@
     async created() {
       try {
         const response = await axios.get(`${API_BASE_URL}/professors`);
-        this.admins = response.data.filter((user) => user.roleId === 1);
+        const professors = response.data.filter((user) => user.roleId === 1);
+
+        // Determina dinámicamente los encabezados en base a los datos
+        this.headers = [
+          { key: "name", label: "Nombre" },
+          { key: "email", label: "Correo Electrónico" },
+          { key: "subjectsNames", label: "Asignaturas" },
+        ];
+
+        // Transforma los datos de los profesores en el formato necesario
+        this.rows = professors.map((professor) => ({
+          id: professor.id,
+          name: professor.name,
+          email: professor.email,
+          roldeId: professor.roleId,
+          subjectsNames: professor.Subjects
+            .map((subject) => subject.Subject.name)
+            .join(", "),
+          subjectsIds: professor.Subjects
+            .map((subject) => subject.Subject.id),   
+        }));
       } catch (error) {
-        console.error("Error al obtener los administradores:", error);
+        console.error("Error al obtener los profesores:", error);
       }
     },
+
+
+
     methods: {
   
       goBack() {
         this.$router.go(-1); // Esto te lleva a la vista anterior
       },
-      handleFormSave(admin) {
+
+      getTableHeaders() {
+        if (!this.professors || this.professors.length === 0) return [];
+        
+        // Obtén las claves del primer objeto para generar encabezados
+        const headers = Object.keys(this.professors[0]).map(key => ({
+          label: this.formatHeaderLabel(key), // Formatear etiquetas (opcional)
+          key: key
+        }));
+
+        // Agrega las columnas de acción si es necesario
+        if (this.actions) {
+          headers.push({ label: "Acciones", key: "actions" });
+        }
+
+        return headers;
+      },
+      formatHeaderLabel(key) {
+        // Formatear nombres de claves en etiquetas más legibles
+        return key.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase());
+      },
+
+
+      handleFormSave(professor) {
       if (this.isEditing) {
-        this.handleSave(admin);  // Llama a handleSave para editar
+        this.handleSave(professor);  // Llama a handleSave para editar
       } else {
-        this.handleCreate(admin);  // Llama a handleCreate para crear
+        this.handleCreate(professor);  // Llama a handleCreate para crear
       }
     },
-      openFomrEdit(admin) {
+      openFomrEdit(professor) {
         this.isEditing = true; 
-        this.adminToEdit = { ...admin };
-        this.formTitle = "Editar Administrador";
+        this.professorToEdit = { ...professor };
+        this.formTitle = "Editar Profesor";
         this.formButtonText = "Guardar Cambios";
         this.formModalVisible = true;
       },
   
       openFormcreate(data) {
-        this.adminToEdit = { name: '', email: '' };
+        this.professorToEdit = { name: '', email: '' };
         this.isEditing = false;
         this.formTitle = data.formTitle;
         this.formButtonText = data.formButtonText;
@@ -134,10 +183,11 @@
           const payload = {
             name: createAdmin.name,
             email: createAdmin.email,
-            roleId: 2,
+            roleId: 1,
+            subjectIds:[2,4,5]
           };
-          const response = await axios.post(`${API_BASE_URL}/admins`, payload);
-          console.log('Usuario creado:', response.data);
+          console.log("payload", payload)
+          const response = await axios.post(`${API_BASE_URL}/professors`, payload);
           await this.loadAdmins();
           this.$emit('save', response.data);
           this.formModalVisible = false;
@@ -154,21 +204,20 @@
       },
   
   
-      async handleSave(updatedAdmin) {
+      async handleSave(updatedProfessor) {
         // Guardar los cambios realizados en el administrador
         try {
-          await axios.put(`${API_BASE_URL}/admin/${updatedAdmin.id}`, {
-            name: updatedAdmin.name,
-            email: updatedAdmin.email,
-            roleId: updatedAdmin.roleId,
+          await axios.put(`${API_BASE_URL}/professor/${updatedProfessor.id}`, {
+            name: updatedProfessor.name,
+            email: updatedProfessor.email,
+            roleId: updatedProfessor.roleId,
+            subjectIds: updatedProfessor.subjectsIds,
           });
-          const index = this.admins.findIndex((admin) => admin.id === updatedAdmin.id);
-          if (index !== -1) {
-            this.admins[index] = { ...updatedAdmin };
-          }
-          this.toastMessage = `Administrador ${updatedAdmin.name} actualizado correctamente.`;
+          
+          this.toastMessage = `Administrador ${updatedProfessor.name} actualizado correctamente.`;
           this.toastType = "success";
           this.toastVisible = true;
+          await this.loadAdmins();
           this.formModalVisible = false;
         } catch (error) {
           this.toastMessage = "Ocurrió un error al intentar guardar los cambios.";
@@ -179,20 +228,20 @@
       handleCancel() {
         this.formModalVisible = false;
       },
-      handleDelete(admin) {
-        this.adminToDelete = admin;
+      handleDelete(professor) {
+        this.professorToDelete = professor;
         this.alertVisible = true;
       },
       async confirmDelete() {
         try {
-          await axios.delete(`${API_BASE_URL}/admin/${this.adminToDelete.id}`);
-          this.admins = this.admins.filter((a) => a.id !== this.adminToDelete.id);
+          await axios.delete(`${API_BASE_URL}/professor/${this.professorToDelete.id}`);
           this.alertVisible = false;
-          this.toastMessage = `Administrador ${this.adminToDelete.name} eliminado correctamente.`;
+          this.toastMessage = `profesor ${this.professorToDelete.name} eliminado correctamente.`;
           this.toastType = "success";
+          await this.loadAdmins();
           this.toastVisible = true;
         } catch (error) {
-          this.toastMessage = "Ocurrió un error al intentar eliminar al administrador.";
+          this.toastMessage = "Ocurrió un error al intentar eliminar al profesor.";
           this.toastType = "error";
           this.toastVisible = true;
         }
@@ -203,12 +252,32 @@
   
       async loadAdmins() {
         try {
-          const response = await axios.get(`${API_BASE_URL}/admins`);
-          this.admins = response.data.filter((user) => user.roleId === 2);
+          const response = await axios.get(`${API_BASE_URL}/professors`);
+          const professors = response.data.filter((user) => user.roleId === 1);
+
+          // Determina dinámicamente los encabezados en base a los datos
+          this.headers = [
+            { key: "name", label: "Nombre" },
+            { key: "email", label: "Correo Electrónico" },
+            { key: "subjectsNames", label: "Asignaturas" },
+          ];
+
+          // Transforma los datos de los profesores en el formato necesario
+          this.rows = professors.map((professor) => ({
+            id: professor.id,
+            name: professor.name,
+            email: professor.email,
+            roldeId: professor.roleId,
+            subjectsNames: professor.Subjects
+              .map((subject) => subject.Subject.name)
+              .join(", "),
+            subjectsIds: professor.Subjects
+              .map((subject) => subject.Subject.id),   
+          }));
         } catch (error) {
-          console.error("Error al obtener los administradores:", error);
+          console.error("Error al obtener los profesores:", error);
         }
-      }
+      },
     },
   };
   </script>
