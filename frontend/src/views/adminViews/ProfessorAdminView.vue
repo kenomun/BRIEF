@@ -8,7 +8,7 @@
         formButtonText="Crear Profesor"
         :fields="['name', 'email']"
         :entity="{}"
-        @openForm="openFormcreate"
+        @openForm="openFormCreate"
       />
       <Table
         class="mt-6"
@@ -169,7 +169,7 @@
         this.formModalVisible = true;
       },
   
-      openFormcreate(data) {
+      openFormCreate(data) {
         this.professorToEdit = { name: '', email: '' };
         this.isEditing = false;
         this.formTitle = data.formTitle;
@@ -188,7 +188,7 @@
           };
           console.log("payload", payload)
           const response = await axios.post(`${API_BASE_URL}/professors`, payload);
-          await this.loadAdmins();
+          await this.loadProfessor();
           this.$emit('save', response.data);
           this.formModalVisible = false;
   
@@ -217,7 +217,7 @@
           this.toastMessage = `Administrador ${updatedProfessor.name} actualizado correctamente.`;
           this.toastType = "success";
           this.toastVisible = true;
-          await this.loadAdmins();
+          await this.loadProfessor();
           this.formModalVisible = false;
         } catch (error) {
           this.toastMessage = "Ocurrió un error al intentar guardar los cambios.";
@@ -238,7 +238,7 @@
           this.alertVisible = false;
           this.toastMessage = `profesor ${this.professorToDelete.name} eliminado correctamente.`;
           this.toastType = "success";
-          await this.loadAdmins();
+          await this.loadProfessor();
           this.toastVisible = true;
         } catch (error) {
           this.toastMessage = "Ocurrió un error al intentar eliminar al profesor.";
@@ -250,7 +250,7 @@
         this.alertVisible = false;
       },
   
-      async loadAdmins() {
+      async loadProfessor() {
         try {
           const response = await axios.get(`${API_BASE_URL}/professors`);
           const professors = response.data.filter((user) => user.roleId === 1);

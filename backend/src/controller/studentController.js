@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { sendOk, badRequest } = require('../helpers/http') 
 
 
 // Crear un nuevo estudiante con asignaturas
@@ -98,23 +99,51 @@ const getAllStudents = async (req, res) => {
         Profile: {
           include: {
             Role: true,
+            Results: true,
+            Subjects: { // Solo las asignaturas asociadas
+              select: {
+                Subject: { // Relación hacia Subjects
+                  select: {
+                    id: true,
+                    name: true, // Solo devolver el id y el nombre
+                  },
+                },
+              },
+            },
           },
         },
       },
       where: {
         Profile: {
           Role: {
-            description: "student",
+            description: "student", // Filtrar solo estudiantes
           },
         },
       },
     });
 
-    res.status(200).json(students);
+    // Formatear la respuesta para incluir únicamente id y name de las asignaturas
+    const studentsWithSubjects = students.map((student) => ({
+      schoolId: student.id,
+      schoolName: student.schoolName,
+      id: student.profileId,
+      name: student.Profile.name,
+      email: student.Profile.email,
+      roleId: student.Profile.Role.id,
+      subjects: student.Profile.Subjects.map((ps) => ps.Subject), // Extraer solo las asignaturas
+    }));
+
+    return sendOk(res, 'usuario encontrado', studentsWithSubjects)
+    
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener estudiantes', details: error.message });
+    res.status(500).json({
+      error: "Error al obtener estudiantes",
+      details: error.message,
+    });
   }
 };
+
+
 
 
 // Obtener un estudiante por su ID
@@ -157,6 +186,7 @@ const getStudentById = async (req, res) => {
 
 // Actualizar un estudiante
 const updateStudent = async (req, res) => {
+  console.log(req)
   try {
     const { id } = req.params;  // Este es el profileId
     const { schoolName, name, email, subjects } = req.body;
