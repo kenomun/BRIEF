@@ -1,61 +1,26 @@
 <template>
   <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de Tests</h1>
-    
-    <FormButtonComponent
-      class="mt-6"
-      buttonText="Crear Test"
-      formTitle="Nuevo Test"
-      formButtonText="Crear test"
-      :fields="['name', 'email']"
-      :entity="{}"
-      @openForm="openFormCreate"
-    />
 
-    <Table
-      class="mt-6"
-      :headers="headers"
-      :rows="rows"
-      actionButtonText="Ver detalles"
-      deleteButtonText="Eliminar"
-      :actions="true"
-      :actionType="'view'"
-      @view="openTestDetails"
-      @delete="handleDeleteTest"
-    />
+    <FormButtonComponent class="mt-6" buttonText="Crear Test" formTitle="Nuevo Test" formButtonText="Crear test"
+      :fields="['name', 'email']" :entity="{}" @openForm="openFormCreate" />
 
-    <button 
-      type="button"
-      @click="goBack" 
+    <Table class="mt-6" :headers="headers" :rows="rows" :options="option" @actionSelect="handleAction" :actions="true" />
+
+    <button type="button" @click="goBack"
       class="mt-10 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Volver</button>
 
     <!-- Componente de Toast -->
-    <Toast
-      v-if="toastVisible"
-      :message="toastMessage"
-      :type="toastType"
-      :duration="3000"
-      @closed="toastVisible = false"
-    />
+    <Toast v-if="toastVisible" :message="toastMessage" :type="toastType" :duration="3000"
+      @closed="toastVisible = false" />
 
     <!-- Modal de Confirmación de Eliminación -->
-    <AlertModal
-      v-if="alertVisible"
-      :show="alertVisible"
-      title="Eliminar Test"
+    <AlertModal v-if="alertVisible" :show="alertVisible" title="Eliminar Test"
       message="¿Estás seguro de que deseas eliminar este test? Esta acción no se puede deshacer."
-      @confirm="confirmDeleteTest"
-      @cancel="cancelDeleteTest"
-    />
+      @confirm="confirmDeleteTest" @cancel="cancelDeleteTest" />
 
-    <TestComponentForm
-      v-if="formModalVisible"
-      :formTitle="formTitle"
-      :formButtonText="formButtonText"
-      :testToEdit="testToEdit"
-      @save="handleSave"
-      @cancel="handleCancel"
-    />
+    <TestComponentForm v-if="formModalVisible" :isOpen="formModalVisible" :formTitle="formTitle"
+      :formButtonText="formButtonText" :testToEdit="testToEdit" @save="handleSave" @cancel="handleCancel" />
 
   </div>
 </template>
@@ -96,7 +61,12 @@ export default {
       modalButtons: [
         { label: "Cerrar", class: "bg-gray-300 text-gray-800", action: "cancel" },
         { label: "Guardar", class: "bg-blue-500 text-white", action: "confirm" },
-      ], 
+      ],
+      option: [
+        { label: "Eliminar", class: "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition duration-300", action: "delete" },
+        { label: "Editar", class: "ml-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition duration-300 mr-2", action: "edit" },
+        { label: "Ver Detalles", class: " bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition duration-300 mr-2", action: "view" },
+      ],
       subjects: [
         { id: 1, name: "Matemáticas" },
         { id: 2, name: "Lengua y Literatura" },
@@ -135,9 +105,14 @@ export default {
     goBack() {
       this.$router.go(-1); // Esto te lleva a la vista anterior
     },
-    openTestDetails(test) {
-      console.log("aqui",test.id)
-      this.$router.push({ name: "testDetail", params :{ id : test.id} });
+
+    handleAction(data, actionId) {
+      if (actionId === 1) {
+      } else if (actionId === 2) {
+        this.$router.push({ name: "testDetail", params: { id: data.id } });
+      } else if (actionId === 3) {
+        this.handleDeleteTest(data);
+      }
     },
 
     openFormCreate() {
@@ -178,7 +153,6 @@ export default {
         }
         
       } catch (error) {
-        console.log("ERROR", error)
         this.toastMessage = "Ocurrió un error al intentar eliminar el test.";
         this.toastType = "error";
         this.toastVisible = true;
@@ -201,20 +175,19 @@ export default {
           }))
         };
 
+
         const response = await axios.post(`${API_BASE_URL}/tests`, payload);
 
-        console.log(response)
         if (response.status == 200) {
-          console.log("guardo")
           await this.loadTest();
-          this.toastMessage = `Test ${updatedStudent.name} guardado correctamente.`;
+          this.toastMessage = `Test  guardado correctamente.`;
           this.toastType = "success";
           this.toastVisible = true;
           this.formModalVisible = false;
         } else {
-          console.log("error")
           this.toastMessage = `Error al guardar Test.`;
           this.toastType = "error";
+          await this.loadTest();
           this.toastVisible = true;
 
           // this.formModalVisible = false;
@@ -230,19 +203,18 @@ export default {
     cancelDeleteTest() {
       this.alertVisible = false;
     },
-    
+
 
     closeModal() {
       this.modalVisible = false;
     },
     handleConfirmTest(formData) {
-      console.log("Confirmado detalles del test:", formData);
       this.modalVisible = false;
     },
 
     handleCancel() {
-        this.formModalVisible = false;
-      },
+      this.formModalVisible = false;
+    },
 
 
     async loadTest() {
@@ -274,4 +246,3 @@ export default {
 <style scoped>
 /* Estilos personalizados si es necesario */
 </style>
-

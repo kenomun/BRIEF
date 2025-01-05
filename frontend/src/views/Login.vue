@@ -1,9 +1,14 @@
 <template>
-    
-    <div>
-    <GoogleLogin :clientId="google_client_id" :callback="loginWithGoogle" />
+  <div class="flex items-center justify-center mt-32 bg-cover bg-center">
+    <div class="bg-white bg-opacity-80 backdrop-blur-lg shadow-lg rounded-lg p-8 max-w-md w-full">
+      <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Inicio de Sesión</h2>
+      <div class="mt-6">
+        <div class="flex flex-col items-center justify-left space-y-2 rounded-md ">
+          <GoogleLogin :clientId="google_client_id" :callback="loginWithGoogle" ref="a" />
+        </div>
+      </div>
     </div>
-        
+  </div>
 </template>
   
   <script>
