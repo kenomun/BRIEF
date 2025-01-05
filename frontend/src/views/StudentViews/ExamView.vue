@@ -54,12 +54,11 @@
         Enviar Respuestas
       </button>
 
-      <AlertModal
+      <AlertResultModal
         :show="showModal"
         :title="'Resultado del Examen'"
         :message="modalMessage"
         @confirm="handleModalConfirm"
-        @cancel="handleModalCancel"
       />
     </div>
   </div>
@@ -68,24 +67,26 @@
 <script>
 import { ref, onMounted } from "vue";
 import { API_BASE_URL } from "../../config/config";
-import AlertModal from "../../components/AlertModal.vue";
+import AlertResultModal from "../../components/AlertResultModal.vue";
+import axios from "axios";
 
 export default {
   components: {
-    AlertModal,
+    AlertResultModal,
   },
   name: "ExamView",
   data() {
     return {
-      exam: null, // Objeto que almacenará el examen
-      answers: {}, // Respuestas seleccionadas (almacenará los ids de las respuestas seleccionadas)
-      correctAnswers: 0, // Número de respuestas correctas
-      totalPoints: 70, // Total de puntos
-      questionsCount: 5, // Número de preguntas en el examen
-      pointsPerQuestion: 70 / 5, // Puntos por cada pregunta (total de puntos dividido por el número de preguntas)
-      obtainedPoints: 0, // Puntaje obtenido por el usuario
-      showModal: false, // Controla la visibilidad del modal
-      modalMessage: "", // Mensaje que se mostrará en el modal
+      exam: null,
+      answers: {},
+      totalPoints: 70,
+      questionsCount: 5,
+      pointsPerQuestion: 70 / 5,
+      obtainedPoints: 0,
+      showModal: false,
+      modalMessage: "",
+      isSubmitted: false,
+      userData: [],
     };
   },
   computed: {
@@ -99,7 +100,6 @@ export default {
       return false;
     },
     percentage() {
-      // Calcular el porcentaje de respuestas correctas
       if (this.questionsCount > 0) {
         return (this.correctAnswers / this.questionsCount) * 100;
       }
@@ -107,6 +107,8 @@ export default {
     },
   },
   mounted() {
+    const userDataString = localStorage.getItem("user");
+    this.userData = JSON.parse(userDataString);
     this.fetchExamData();
   },
   methods: {
@@ -114,14 +116,24 @@ export default {
       console.log("fetch");
       try {
         const examId = this.$route.params.examId;
-        const response = await fetch(`${API_BASE_URL}/test/${examId}`);
-        const data = await response.json();
-        this.exam = data;
+        const response = await axios.get(`${API_BASE_URL}/test/${examId}`);
+
+        if (response.status == 200) {
+          this.exam = response.data;
+        } else {
+          this.toastMessage = "Error inesperado";
+          this.toastType = "error";
+          this.toastVisible = true;
+        }
       } catch (error) {
-        console.error("Error fetching exam data:", error);
+        this.toastMessage = "Error inesperado";
+        this.toastType = "error";
+        this.toastVisible = true;
       }
     },
-    submitExam() {
+
+    async submitExam() {
+      console.log("userdata ", this.userData);
       if (!this.exam || !this.exam.Questions) {
         console.error("El examen o las preguntas no están disponibles.");
         return;
@@ -130,18 +142,19 @@ export default {
       // Contamos las respuestas correctas
       let correctCount = 0;
 
-      // Recorrer las preguntas del test
-      this.exam.Questions.forEach((question) => {
-        // Buscar la respuesta seleccionada del usuario para esta pregunta
-        const selectedAnswerId = this.answers[question.id];
+      const answersToSend = [];
 
-        // Si se seleccionó una respuesta
+      this.exam.Questions.forEach((question) => {
+        const selectedAnswerId = this.answers[question.id];
         if (selectedAnswerId) {
-          // Buscar la respuesta correcta para esta pregunta
+          answersToSend.push({
+            questionId: question.id,
+            answerId: selectedAnswerId,
+          });
+
           const correctAnswer = question.Answers.find(
             (answer) => answer.isCorrect
           );
-
           // Si la respuesta seleccionada es la correcta
           if (correctAnswer && correctAnswer.id === selectedAnswerId) {
             correctCount++;
@@ -149,31 +162,46 @@ export default {
         }
       });
 
-      // Calculamos el puntaje obtenido (por ejemplo, cada respuesta correcta vale puntos según "pointsPerQuestion")
+      // Calculamos el puntaje obtenido
       this.correctAnswers = correctCount;
       this.obtainedPoints = this.correctAnswers * this.pointsPerQuestion;
 
       // Mostrar el número de respuestas correctas, el puntaje obtenido y el porcentaje en el modal
       this.showModal = true;
-      console.log("this.correctAnswers", this.correctAnswers);
-      console.log("this.obtainedPoints", this.obtainedPoints);
-      console.log(this.percentage.toFixed(2));
 
       this.modalMessage = `
-        Respuestas correctas: ${this.correctAnswers} de ${this.questionsCount}
-        Puntaje obtenido: ${this.obtainedPoints} puntos
-        Porcentaje de respuestas correctas: ${this.percentage.toFixed(2)}%
-      `;
+    Respuestas correctas: ${this.correctAnswers} de ${this.questionsCount}
+    Puntaje obtenido: ${this.obtainedPoints} puntos
+    Porcentaje de respuestas correctas: ${this.percentage.toFixed(2)}%
+  `;
+
+      // Enviar las respuestas al servidor
+
+      const payload = {
+        profileId: this.userData.id,
+        testId: this.exam.id,
+        score: this.obtainedPoints,
+        answers: answersToSend,
+      };
+
+      console.log("paylod", payload);
+      try {
+        const response = await axios.post(`${API_BASE_URL}/results`, payload);
+        if (response.status == 200) {
+          this.toastMessage = "Examen guardado";
+          this.toastType = "success";
+          this.toastVisible = true;
+        }
+      } catch (error) {
+        this.toastMessage = "Error al guardar el examen";
+        this.toastType = "error";
+        this.toastVisible = true;
+      }
     },
+
     handleModalConfirm() {
-      // Acción cuando el usuario confirma el modal
       this.showModal = false;
-      console.log("Modal confirmado");
-    },
-    handleModalCancel() {
-      // Acción cuando el usuario cancela el modal
-      this.showModal = false;
-      console.log("Modal cancelado");
+      this.$router.push(`/subjectTest/${this.exam.Subject.id}`);
     },
   },
 };
