@@ -49,14 +49,14 @@ const routes = [
     ],
   },
   {
-    path: '/subjects',
-    name: 'Subjects',
+    path: '/test',
+    name: 'Test',
     component: AdminLayout,
     children: [
       {
         path: '',
-        name: 'SubjectsList',
-        component: () => import('../views/adminViews/SubjectsView.vue'),
+        name: 'TestSubjectsList',
+        component: () => import('../views/adminViews/TestView.vue'),
       },
     ],
   },
@@ -96,6 +96,22 @@ const routes = [
       },
     ],
   },
+
+  {
+    path: '/test/:id',
+    name: 'TestDetail',
+    component: AdminLayout,
+    children: [
+      {
+        path: '',
+        name: 'testDetail',
+        component: () => import('../views/adminViews/TestDetailView.vue'),
+        props: true, // Esto pasa los params como props al componente
+        key: (route) => route.params.id, // Usar el id como key para forzar la recreación
+      },
+    ],
+  }
+  
 ];
 
 const router = createRouter({

@@ -34,15 +34,15 @@
           <td v-if="actions" class="border border-gray-300 px-4 py-2">
             <button
               class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition duration-300 mr-2"
-              @click="$emit('edit', row)"
+              @click="handleAction(row)"
             >
-              Editar
+              {{ actionButtonText }}
             </button>
             <button
               class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition duration-300"
               @click="$emit('delete', row)"
             >
-              Eliminar
+              {{ deleteButtonText }}
             </button>
           </td>
         </tr>
@@ -50,7 +50,6 @@
     </table>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -68,25 +67,51 @@ export default {
       type: Boolean,
       default: false,
     },
+    actionButtonText: {
+      type: String,
+      default: 'Editar', // Valor predeterminado, pero puede ser sobrescrito
+    },
+    deleteButtonText: {
+      type: String,
+      default: 'Eliminar', // Valor predeterminado, pero puede ser sobrescrito
+    },
+    actionType: {
+      type: String,
+      default: 'view', // Default puede ser 'view' o 'edit'
+    },
   },
+
+  omputed: {
+    actionButtonText() {
+      return this.actionType === 'edit' ? 'Editar' : 'Ver detalles';
+    },
+  },
+  
   methods: {
     getCellValue(row, key) {
-    if (!(key in row)) return "--";
-    const value = row[key];
+      if (!(key in row)) return "--";
+      const value = row[key];
 
-    // Si el valor es un array de asignaturas (ya convertido en una cadena)
-    if (Array.isArray(value)) {
-      return value.join(", ");
-    }
+      // Si el valor es un array de asignaturas (ya convertido en una cadena)
+      if (Array.isArray(value)) {
+        return value.join(", ");
+      }
 
-    if (typeof value === "object" && value !== null) {
-      return JSON.stringify(value);
-    }
+      if (typeof value === "object" && value !== null) {
+        return JSON.stringify(value);
+      }
 
-    return value;
-  },
+      return value;
+    },
 
-
+    handleAction(row) {
+      // Aquí manejamos el evento según el tipo de acción
+      if (this.actionType === 'edit') {
+        this.$emit('edit', row); // Emitir evento 'edit'
+      } else {
+        this.$emit('view', row); // Emitir evento 'view'
+      }
+    },
   },
 };
 </script>
