@@ -73,11 +73,11 @@ export default {
     handleAction(action, data) {
       // Aquí manejamos el evento según el tipo de acción
       if (action === 'edit') {
-        this.$emit('actionSelect', data , 1); // Emitir evento 'edit'
+        this.$emit('actionSelect', data , 1); 
       } else if (action === 'view') {
-        this.$emit('actionSelect', data, 2); // Emitir evento 'view'
+        this.$emit('actionSelect', data, 2); 
       } else if (action === 'delete') {
-        this.$emit('actionSelect', data, 3); // Emitir evento 'delete'
+        this.$emit('actionSelect', data, 3);
       }
     }
   }

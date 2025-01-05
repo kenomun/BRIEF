@@ -3,7 +3,7 @@
       <div class="bg-white rounded-lg shadow-lg w-96">
         <div class="p-4">
           <h3 class="text-lg font-bold text-gray-800 mb-4">{{ title }}</h3>
-          <p class="text-gray-600">{{ message }}</p>
+          <p :class="messageClass">{{ message }}</p>  <!-- Usamos la clase personalizada aquí -->
         </div>
         <div class="flex justify-end p-4 gap-2">
           <button
@@ -21,38 +21,41 @@
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "AlertModal",
-    props: {
-      show: {
-        type: Boolean,
-        required: true,
-      },
-      title: {
-        type: String,
-        default: "¿Estás seguro?",
-      },
-      message: {
-        type: String,
-        default: "Esta acción no se puede deshacer.",
-      },
+</template>
+
+<script>
+export default {
+  name: "AlertModal",
+  props: {
+    show: {
+      type: Boolean,
+      required: true,
     },
-    emits: ["confirm", "cancel"],
-    methods: {
-      onConfirm() {
-        this.$emit("confirm");
-      },
-      onCancel() {
-        this.$emit("cancel");
-      },
+    title: {
+      type: String,
+      default: "¿Estás seguro?",
     },
-  };
-  </script>
-  
-  <style scoped>
-  /* Personaliza el estilo según tu diseño */
-  </style>
-  
+    message: {
+      type: String,
+      default: "Esta acción no se puede deshacer.",
+    },
+    messageClass: {
+      type: String,
+      default: "",  // Aquí pasamos la clase personalizada si la necesitamos
+    },
+  },
+  emits: ["confirm", "cancel"],
+  methods: {
+    onConfirm() {
+      this.$emit("confirm");
+    },
+    onCancel() {
+      this.$emit("cancel");
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* Personaliza el estilo según tu diseño */
+</style>

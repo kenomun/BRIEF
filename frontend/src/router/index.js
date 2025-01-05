@@ -137,6 +137,20 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/exam/:examId',
+    name: 'Exam',
+    component: StudentLayout,
+    children: [
+      {
+        path: '',
+        name: 'Examresponse',
+        component: () => import('../views/StudentViews/ExamView.vue'),
+        props: true, 
+        key: (route) => route.params.id,
+      },
+    ],
+  },
   
 ];
 

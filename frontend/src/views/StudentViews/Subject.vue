@@ -42,7 +42,6 @@ export default {
   mounted() {
     const userDataString = localStorage.getItem('user')
     const userData = JSON.parse(userDataString)
-    console.log(userData)
     this.getStudentData(userData);
   },
 
