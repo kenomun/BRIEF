@@ -42,6 +42,7 @@
         if (res.status === 200) {
           const userStore = useUserStore()
           userStore.login({
+            id: userData.id,
             name: userData.name,
             token: userData.token,
             email: userData.email,

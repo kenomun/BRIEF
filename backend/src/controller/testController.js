@@ -218,12 +218,12 @@ const getTestsBySubjectId = async (req, res) => {
       },
       include: {
         Subject: true, 
-        Questions: {
-          include: {
-            content: true,
-            Answers: true,
-          },
-        },
+        // Questions: {
+        //   include: {
+        //     content: true,
+        //     Answers: true,
+        //   },
+        // },
       },
     });
 
