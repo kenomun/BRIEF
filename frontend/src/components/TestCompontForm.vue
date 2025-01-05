@@ -76,11 +76,16 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 export default {
   name: 'TestForm',
   props: {
+    testId: {
+      type: Number,
+      required: false,
+      default: null,
+    },
     formTitle: {
       type: String,
       required: true,
@@ -89,6 +94,11 @@ export default {
       type: String,
       required: true,
     },
+    actionType: {
+      type: String,
+      required: false,
+      default: 'create',
+    },
     testToEdit: {
       type: Object,
       default: () => ({
@@ -96,11 +106,11 @@ export default {
         subjectId: null,
         content: '',
         questions: [
-          { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
-          { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
-          { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
-          { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
-          { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+          { id: 0, questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+          { id: 0, questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+          { id: 0, questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+          { id: 0, questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+          { id: 0, questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
         ],
       }),
     },
@@ -120,7 +130,6 @@ export default {
       basicFields: [
         { name: 'name', type: 'text', label: 'Nombre', placeholder: 'Nombre del test' },
         { name: 'subject', type: 'text', label: 'Asignatura', placeholder: 'Asignatura del test' },
-        { name: 'content', type: 'text', label: 'Contenido', placeholder: 'Contenido del test' },
       ],
       testData: { ...this.testToEdit },
     };
@@ -132,6 +141,7 @@ export default {
         testName: this.testData.name,  // El nombre del test
         subjectId: this.testData.subjectId,  // El ID de la asignatura
         questions: this.testData.questions.map(question => ({
+          id: question.id,
           question: question.questionText,  // El texto de la pregunta
           content: {
             description: question.content || ''  // El contenido (puedes agregar un campo de contenido si es necesario)
@@ -146,7 +156,7 @@ export default {
       console.log("form",formattedData)
 
       // Aquí enviarás la data al backend para guardarla
-      this.$emit('save', formattedData);
+      this.$emit('save', formattedData, this.actionType, this.testId);
     },
     cancelForm() {
       this.$emit('cancel');
