@@ -1,28 +1,34 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Botón Volver -->
-    <button @click="goBack" class="btn btn-secondary mb-6">
-      ← Volver
-    </button>
+    <button @click="goBack" class="btn btn-secondary mb-6">← Volver</button>
 
     <!-- Título Principal -->
-    <h1 class="text-3xl font-extrabold text-blue-700 mb-6">Detalles del Test</h1>
+    <h1 class="text-3xl font-extrabold text-blue-700 mb-6">
+      Detalles del Test
+    </h1>
 
     <!-- Contenido del Test -->
     <div v-if="test" class="bg-white shadow-md rounded-lg p-6">
       <!-- Nombre del Test -->
       <p class="text-lg font-semibold mb-2">
-        <span class="font-bold text-gray-700">Nombre del Test:</span> {{ test.name }}
+        <span class="font-bold text-gray-700">Nombre del Test:</span>
+        {{ test.name }}
       </p>
 
       <!-- Asignatura -->
       <p class="text-lg font-semibold mb-6">
-        <span class="font-bold text-gray-700">Asignatura:</span> {{ test.Subject.name }}
+        <span class="font-bold text-gray-700">Asignatura:</span>
+        {{ test.Subject.name }}
       </p>
 
       <!-- Preguntas -->
       <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-4">Preguntas:</h2>
-      <div v-for="question in test.Questions" :key="question.id" class="border-b border-gray-200 pb-4 mb-4">
+      <div
+        v-for="question in test.Questions"
+        :key="question.id"
+        class="border-b border-gray-200 pb-4 mb-4"
+      >
         <!-- Pregunta -->
         <p class="text-lg font-semibold text-gray-700">
           <span class="font-bold">Pregunta:</span> {{ question.question }}
@@ -30,14 +36,19 @@
 
         <!-- Contenido -->
         <p class="text-sm text-gray-600 mb-2">
-          <span class="font-bold">Contenido:</span> {{ question.content.description }}
+          <span class="font-bold">Contenido:</span>
+          {{ question.content.description }}
         </p>
 
         <!-- Respuestas -->
         <p class="font-bold text-gray-700 mt-2">Respuestas:</p>
         <ul class="list-disc list-inside mt-2">
-          <li v-for="answer in question.Answers" :key="answer.id"
-            :class="{ 'font-bold text-green-600': answer.isCorrect }" class="text-gray-800">
+          <li
+            v-for="answer in question.Answers"
+            :key="answer.id"
+            :class="{ 'font-bold text-green-600': answer.isCorrect }"
+            class="text-gray-800"
+          >
             {{ answer.answer }}
           </li>
         </ul>
@@ -70,9 +81,11 @@ export default {
     const id = ref(route.params.id);
 
     const loadTestData = async (id) => {
-      console.log("Llamando a la API con ID:", id);  // Depuración
+      console.log("Llamando a la API con ID:", id); // Depuración
       try {
-        const response = await axios.get(`http://localhost:5000/api/test/${id}`);
+        const response = await axios.get(
+          `http://localhost:5000/api/test/${id}`
+        );
         console.log("Datos del test:", response.data);
         test.value = response.data;
       } catch (error) {
@@ -83,8 +96,8 @@ export default {
     };
 
     const init = async (id) => {
-      console.log('first');
-      console.log("Cargando test con ID:", id);  // Depuración
+      console.log("first");
+      console.log("Cargando test con ID:", id);
       await loadTestData(id);
     };
 
@@ -92,10 +105,13 @@ export default {
       init(id.value);
     });
 
-    watch(() => route.params.id, (newId) => {
-      id.value = newId;
-      init(newId);
-    });
+    watch(
+      () => route.params.id,
+      (newId) => {
+        id.value = newId;
+        init(newId);
+      }
+    );
 
     const goBack = () => {
       router.go(-1);
@@ -108,7 +124,6 @@ export default {
     };
   },
 };
-
 </script>
 
 <style scoped>

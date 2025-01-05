@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AdminLayout from "../views/AdminLayout.vue";
 import StudentLayout from "../views/StudentLayout.vue";
+import { getRoleFromLocalStorage } from "../auth/auth";
 
 const routes = [
   {
@@ -24,6 +25,14 @@ const routes = [
         component: () => import("../views/adminViews/AdminDashboard.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/users",
@@ -36,6 +45,14 @@ const routes = [
         component: () => import("../views/adminViews/UsersView.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/test",
@@ -48,6 +65,14 @@ const routes = [
         component: () => import("../views/adminViews/TestView.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/admins",
@@ -60,6 +85,14 @@ const routes = [
         component: () => import("../views/adminViews/UserAdminView.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next(); // Permitir acceso si es administrador
+      } else {
+        next({ name: "NotFound" }); // Redirigir a página de no autorizado
+      }
+    },
   },
   {
     path: "/professors",
@@ -72,6 +105,14 @@ const routes = [
         component: () => import("../views/adminViews/ProfessorAdminView.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/students",
@@ -84,6 +125,14 @@ const routes = [
         component: () => import("../views/adminViews/StudentAdminView.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
 
   {
@@ -98,6 +147,14 @@ const routes = [
         key: (route) => route.params.id,
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/reports",
@@ -110,6 +167,14 @@ const routes = [
         component: () => import("../views/adminViews/reportListView.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 2) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
 
   {
@@ -123,6 +188,14 @@ const routes = [
         component: () => import("../views/StudentViews/StudentDashboard.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 3) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/subjects",
@@ -135,6 +208,14 @@ const routes = [
         component: () => import("../views/StudentViews/Subject.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 3) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/subjects",
@@ -147,6 +228,14 @@ const routes = [
         component: () => import("../views/StudentViews/Subject.vue"),
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 3) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/subjectTest/:subjectId",
@@ -161,6 +250,13 @@ const routes = [
         key: (route) => route.params.id,
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 3) {
+        next();
+        next({ name: "NotFound" });
+      }
+    },
   },
   {
     path: "/exam/:examId",
@@ -175,6 +271,14 @@ const routes = [
         key: (route) => route.params.id,
       },
     ],
+    beforeEnter: (to, from, next) => {
+      const role = getRoleFromLocalStorage();
+      if (role === 3) {
+        next();
+      } else {
+        next({ name: "NotFound" });
+      }
+    },
   },
 ];
 

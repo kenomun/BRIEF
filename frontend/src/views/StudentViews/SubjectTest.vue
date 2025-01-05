@@ -15,17 +15,19 @@
 
     <!-- Exámenes Pendientes -->
     <div v-else>
-      <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">
-        Exámenes Pendientes
-      </h2>
-      <Table
-        class="mt-6 bg-white shadow-md rounded-lg overflow-hidden"
-        :headers="headers"
-        :rows="pendingRows"
-        :actions="true"
-        :options="optionpendiente"
-        @actionSelect="handleAction"
-      />
+      <div v-if="pendingRows.length > 0">
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">
+          Exámenes Pendientes
+        </h2>
+        <Table
+          class="mt-6 bg-white shadow-md rounded-lg overflow-hidden"
+          :headers="headers"
+          :rows="pendingRows"
+          :actions="true"
+          :options="optionpendiente"
+          @actionSelect="handleAction"
+        />
+      </div>
     </div>
 
     <!-- Exámenes Completados -->
@@ -91,8 +93,7 @@ export default {
   data() {
     return {
       headers: [{ key: "name", label: "Nombre del Examen" }],
-      // rows: [],
-      pendingRows: [], // Exámenes pendientes
+      pendingRows: [],
       completedRows: [],
       optionpendiente: [
         {
@@ -225,7 +226,7 @@ export default {
     },
 
     goBack() {
-      this.$router.go(-1); // Esto regresa a la página anterior
+      this.$router.push("/subjects");
     },
   },
 };
