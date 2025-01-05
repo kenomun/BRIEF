@@ -1,13 +1,15 @@
 <!-- src/views/User.vue -->
 <template>
   <div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Gestión de Usuarios</h1>
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">
+      Gestión de Usuarios
+    </h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- Tarjeta para Administradores -->
       <Card
         title="Administradores"
-        description="Gestiona a los usuarios con permisos de administrador."
-        link="/admins"     
+        description="Gestiona a los  administrador."
+        link="/admins"
       />
       <!-- Tarjeta para Profesores -->
       <Card
@@ -26,10 +28,10 @@
 </template>
 
 <script>
-import Card from '../../components/Card.vue';
+import Card from "../../components/Card.vue";
 
 export default {
-  name: 'User',
+  name: "User",
   components: {
     Card,
   },
