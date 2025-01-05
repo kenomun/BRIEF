@@ -38,7 +38,7 @@ const createResult = async (req, res) => {
 };
 
 // Controlador para obtener los resultados según profileId y testId
-async function getResultsDetail(req, res) {
+const getResultsDetail = async (req, res) => {
   const { profileId, testId } = req.params;
 
   try {
@@ -78,9 +78,113 @@ async function getResultsDetail(req, res) {
       .status(500)
       .json({ message: "Error al obtener los resultados." });
   }
-}
+};
+
+const getGroupedResults = async (req, res) => {
+  try {
+    const results = await prisma.result.findMany({
+      include: {
+        profile: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        test: {
+          include: {
+            Subject: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Agrupar resultados
+    const groupedResults = results.reduce(async (accPromise, result) => {
+      const acc = await accPromise;
+
+      const profileId = result.profile.id;
+      const profileName = result.profile.name;
+      const subjectId = result.test.Subject.id;
+      const subjectName = result.test.Subject.name;
+
+      // Obtener los perfiles de la tabla ProfileSubject que están asociados a este Subject
+      const profiles = await prisma.profileSubject.findMany({
+        where: {
+          subjectId: subjectId,
+        },
+        include: {
+          Profile: {
+            select: {
+              id: true,
+              name: true,
+              roleId: true,
+            },
+          },
+        },
+      });
+
+      // Filtrar los perfiles que tengan roleId == 3 (profesores)
+      const professors = profiles
+        .filter((ps) => ps.Profile.roleId === 3)
+        .map((ps) => ps.Profile.name)
+        .join(", ");
+
+      // Buscar si ya existe una entrada para el perfil y la asignatura
+      const existing = acc.find(
+        (entry) =>
+          entry.ProfileId === profileId && entry.SubjectId === subjectId
+      );
+
+      if (existing) {
+        existing.Score += result.score;
+        existing.Count += 1;
+      } else {
+        // Si no existe, creamos una nueva entrada
+        acc.push({
+          ProfileId: profileId,
+          ProfileName: profileName,
+          SubjectId: subjectId,
+          SubjectName: subjectName,
+          Score: result.score,
+          ProfessorName: professors,
+          Count: 1,
+        });
+      }
+
+      return acc;
+    }, Promise.resolve([]));
+
+    // Calcular porcentaje para cada agrupación
+    const resultsWithPercentage = await (
+      await groupedResults
+    ).map((entry) => {
+      const maxScorePerRecord = 70;
+      const maxScore = entry.Count * maxScorePerRecord;
+      const percentage = Math.ceil((entry.Score / maxScore) * 100);
+
+      return {
+        ...entry,
+        Percentage: `${percentage}`,
+        maxScore: maxScore,
+      };
+    });
+
+    res.status(200).json(resultsWithPercentage);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Ocurrió un error al obtener los resultados agrupados." });
+  }
+};
 
 module.exports = {
   createResult,
   getResultsDetail,
+  getGroupedResults,
 };
