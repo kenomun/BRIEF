@@ -3,6 +3,7 @@
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de Profesores</h1>
     <FormButtonComponent class="mt-6" buttonText="Crear Profesor" formTitle="Nuevo Profesor"
       formButtonText="Crear Profesor" :fields="['name', 'email']" :entity="{}" @openForm="openFormCreate" />
+    
     <Table class="mt-6" :headers="headers" :rows="rows" :options="option" :actions="true"
       @actionSelect="handleAction" />
 

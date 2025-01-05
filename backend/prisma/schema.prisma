@@ -88,6 +88,7 @@ model Answer {
 model Result {
   id         Int      @id @default(autoincrement())
   profileId  Int
+  score     Float
   testId     Int
   profile    Profiles @relation(fields: [profileId], references: [id], onDelete: Cascade)
   test       Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
