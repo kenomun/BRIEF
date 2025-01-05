@@ -53,10 +53,23 @@
 </template>
 
 <script>
-export default {
-  name: "Sidebar",
-};
-</script>
+  import { useUserStore } from '../store/useStore';
+  
+  export default {
+    name: "SidebarAdmin",
+    setup() {
+      const userStore = useUserStore();
+  
+      const handleLogout = () => {
+        userStore.logout();
+      };
+  
+      return {
+        handleLogout,
+      };
+    },
+  };
+  </script>
 
 <style scoped>
 /* Si necesitas agregar más estilos específicos para el Sidebar */

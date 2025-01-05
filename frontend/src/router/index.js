@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import AdminLayout from '../views/AdminLayout.vue';  // Importa tu Layout
+import AdminLayout from '../views/AdminLayout.vue'; 
+import StudentLayout from '../views/StudentLayout.vue';
 
 const routes = [
   {
@@ -15,24 +16,12 @@ const routes = [
   {
     path: '/admin-dashboard',
     name: 'AdminDashboard',
-    component: AdminLayout,  // Usa el Layout para envolver el contenido
+    component: AdminLayout,
     children: [
       {
         path: '',
         name: 'AdminDashboardContent',
         component: () => import('../views/adminViews/AdminDashboard.vue'),
-      },
-    ],
-  },
-  {
-    path: '/student-dashboard',
-    name: 'StudentDashboard',
-    component: AdminLayout,  // Usa el Layout para envolver el contenido
-    children: [
-      {
-        path: '',
-        name: 'StudentDashboardContent',
-        component: () => import('../views/StudentViews/StudentDashboard.vue'),
       },
     ],
   },
@@ -105,8 +94,20 @@ const routes = [
         path: '',
         name: 'testDetail',
         component: () => import('../views/adminViews/TestDetailView.vue'),
-        props: true, // Esto pasa los params como props al componente
-        key: (route) => route.params.id, // Usar el id como key para forzar la recreación
+        props: true, 
+        key: (route) => route.params.id,
+      },
+    ],
+  },
+  {
+    path: '/student-dashboard',
+    name: 'StudentDashboard',
+    component: StudentLayout, 
+    children: [
+      {
+        path: '',
+        name: 'StudentDashboardContent',
+        component: () => import('../views/StudentViews/StudentDashboard.vue'),
       },
     ],
   },

@@ -23,6 +23,7 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem('user');
       this.isLogged = false;
       this.loggedInUser = null;
+      window.location.href = '/';
     },
   },
 });
