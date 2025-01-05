@@ -16,6 +16,7 @@
   import { GoogleLogin, decodeCredential } from 'vue3-google-login'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/useStore.js'
+  import { API_BASE_URL } from "../config/config";
   import axios from 'axios'
 
   export default {
@@ -32,7 +33,7 @@
       try {
         const user = decodeCredential(response.credential)
 
-        const res = await axios.get(`http://localhost:5000/api/login/${user.email}`);
+        const res = await axios.get(`${API_BASE_URL}/login/${user.email}`);
 
         const userData = res.data.data
         console.log("userData", userData)
@@ -49,8 +50,8 @@
             googleToken: googleToken
           })
 
-          if(userData.roleId ==2 ) router.push({name: 'AdminDashboard'})
-          if(userData.roleId ==3 ) router.push({name: 'StudentDashboard'})
+          if(userData.roleId == 2 ) router.push({name: 'AdminDashboardContent'})
+          if(userData.roleId == 3 ) router.push({name: 'StudentDashboardContent'})
         }
       } catch (error) {
         console.log(`error: ${error}`)

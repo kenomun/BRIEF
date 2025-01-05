@@ -168,9 +168,9 @@ export default {
           questions: testData.questions.map(question => ({
             question: question.question,
             content: { description: question.content.description || '' },
-            answers: question.answers.map((answer, index) => ({
+            answers: question.answers.map((answer) => ({
               answer: answer.answer,
-              isCorrect: question.correctAnswer === index
+              isCorrect: answer.isCorrect
             }))
           }))
         };

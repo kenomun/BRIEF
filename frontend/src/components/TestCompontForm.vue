@@ -127,6 +127,7 @@ export default {
   },
   methods: {
     handleFormSave() {
+      console.log("TESTDATA",this.testData)
       const formattedData = {
         testName: this.testData.name,  // El nombre del test
         subjectId: this.testData.subjectId,  // El ID de la asignatura
@@ -141,6 +142,8 @@ export default {
           }))
         }))
       };
+
+      console.log("form",formattedData)
 
       // Aquí enviarás la data al backend para guardarla
       this.$emit('save', formattedData);

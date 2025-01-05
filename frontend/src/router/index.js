@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import AdminLayout from '../views/AdminLayout.vue';  // Importa tu Layout
+import AdminLayout from '../views/AdminLayout.vue'; 
+import StudentLayout from '../views/StudentLayout.vue';
 
 const routes = [
   {
@@ -21,18 +22,6 @@ const routes = [
         path: '',
         name: 'AdminDashboardContent',
         component: () => import('../views/adminViews/AdminDashboard.vue'),
-      },
-    ],
-  },
-  {
-    path: '/student-dashboard',
-    name: 'StudentDashboard',
-    component: AdminLayout,  // Usa el Layout para envolver el contenido
-    children: [
-      {
-        path: '',
-        name: 'StudentDashboardContent',
-        component: () => import('../views/StudentViews/StudentDashboard.vue'),
       },
     ],
   },
@@ -109,7 +98,31 @@ const routes = [
         key: (route) => route.params.id, // Usar el id como key para forzar la recreación
       },
     ],
-  }
+  },
+  {
+    path: '/student-dashboard',
+    name: 'StudentDashboard',
+    component: StudentLayout,  // Usa el Layout para envolver el contenido
+    children: [
+      {
+        path: '',
+        name: 'StudentDashboardContent',
+        component: () => import('../views/StudentViews/StudentDashboard.vue'),
+      },
+    ],
+  },
+  {
+    path: '/subject',
+    name: 'Subject',
+    component: StudentLayout,
+    children: [
+      {
+        path: '',
+        name: 'StudentList',
+        component: () => import('../views/StudentViews/Subject.vue'),
+      },
+    ],
+  },
   
 ];
 
