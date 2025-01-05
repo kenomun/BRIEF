@@ -133,7 +133,6 @@ export default {
   },
 
   methods: {
-    // Función para obtener los tests desde la API
     async fetchTests() {
       try {
         const response = await axios.get(
@@ -225,7 +224,6 @@ export default {
       this.showModal = false;
     },
 
-    // Función para regresar a la vista anterior
     goBack() {
       this.$router.go(-1); // Esto regresa a la página anterior
     },

@@ -36,12 +36,12 @@ export default {
     },
     message: {
       type: String,
-      required: true, // El mensaje se pasa como texto con saltos de línea
+      required: true,
     },
   },
   computed: {
     messageLines() {
-      return this.message.split("\n"); // Dividimos el mensaje por líneas
+      return this.message.split("\n");
     },
   },
   emits: ["confirm"],

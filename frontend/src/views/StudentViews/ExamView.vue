@@ -165,8 +165,6 @@ export default {
       // Calculamos el puntaje obtenido
       this.correctAnswers = correctCount;
       this.obtainedPoints = this.correctAnswers * this.pointsPerQuestion;
-
-      // Mostrar el número de respuestas correctas, el puntaje obtenido y el porcentaje en el modal
       this.showModal = true;
 
       this.modalMessage = `
@@ -174,8 +172,6 @@ export default {
     Puntaje obtenido: ${this.obtainedPoints} puntos
     Porcentaje de respuestas correctas: ${this.percentage.toFixed(2)}%
   `;
-
-      // Enviar las respuestas al servidor
 
       const payload = {
         profileId: this.userData.id,
