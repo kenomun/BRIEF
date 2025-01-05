@@ -1,10 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const resultController = require('../controller/resultController');
+const resultController = require("../controller/resultController");
 
 // Rutas de Result
-router.post('/results', resultController.createResult); // Guardar resultado al finalizar examen
-router.get('/results/test/:testId/student/:profileId', resultController.getResultsDetail); // Listar todos los resultados
-// router.get('/results/student/:studentId', resultController.getResultsByStudent); // Resultados de un estudiante específico
+router.post("/results", resultController.createResult);
+router.get(
+  "/results/test/:testId/student/:profileId",
+  resultController.getResultsDetail
+);
+router.get("/results/report/", resultController.getGroupedResults);
 
 module.exports = router;
