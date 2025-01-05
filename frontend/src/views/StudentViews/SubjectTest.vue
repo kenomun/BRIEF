@@ -2,9 +2,12 @@
   <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de examenes</h1>
 
+    <div v-if="rows.length === 0" class="text-center text-gray-600">
+      No hay exámenes creados para esta asignatura.
+    </div>
     
-    <Table class="mt-6" :headers="headers" :rows="rows" :actions="true" :options="option"
-      @actionSelect="handleAction" />
+    <Table v-else class="mt-6" :headers="headers" :rows="rows" :actions="true" :options="option"
+    @actionSelect="handleAction" />
 
     <button type="button" @click="goBack"
       class=" mt-10 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Volver</button>
@@ -20,6 +23,7 @@
 import Table from '../../components/Table.vue'
 import Toast from '../../components/ToastComponent.vue'
 import { API_BASE_URL } from "../../config/config";
+import axios from 'axios';
 
 
 export default {
@@ -50,20 +54,32 @@ export default {
     }
   },
 
+  mounted() {
+    this.fetchTests();
+  },
+
   methods: {
     // Función para obtener los tests desde la API
     async fetchTests() {
       try {
         const response = await axios.get(`${API_BASE_URL}/test/subject/${this.subjectId}`);
-        this.rows = response.data.map(test => ({
-          id: test.id,
-          name: test.name
-        }));
+        
+        if (response.status == 200) {
+          if (response.data.length > 0) {
+          this.rows = response.data.map(test => ({
+            id: test.id,
+            name: test.name
+            }));
+          } else {
+            this.rows = []; 
+          }
+        }
+
       } catch (error) {
-        console.error("Error fetching tests:", error);
-        this.toastMessage = "Error al cargar los exámenes.";
-        this.toastType = 'error';
+        this.toastMessage = "No hay examenes creados.";
+        this.toastType = 'success';
         this.toastVisible = true;
+
       }
     },
 

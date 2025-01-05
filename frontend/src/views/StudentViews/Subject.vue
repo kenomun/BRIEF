@@ -29,29 +29,33 @@ export default {
     Card,
   },
   data() {
+
     return {
       subjects: [],
       loading: true,
       error: null,
+
     };
   },
 
 
   mounted() {
-    this.getStudentData();
+    const userDataString = localStorage.getItem('user')
+    const userData = JSON.parse(userDataString)
+    console.log(userData)
+    this.getStudentData(userData);
   },
 
   methods: {
-    async getStudentData() {
+    async getStudentData(userData) {
       try {
         // Obtén el ID del estudiante del localStorage
-        const studentId = 82;
-
-        if (!studentId) {
+        
+        if (!userData.id) {
           throw new Error("No se encontró al buscar asignatura");
         }
 
-        const response = await axios.get(`${API_BASE_URL}/student/${studentId}`);
+        const response = await axios.get(`${API_BASE_URL}/student/${userData.id}`);
 
         if (response.status != 200) {
           throw new Error("Error al obtener la información del estudiante.");
