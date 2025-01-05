@@ -99,7 +99,6 @@ const routes = [
 
   {
     path: '/test/:id',
-    name: 'TestDetail',
     component: AdminLayout,
     children: [
       {
