@@ -112,28 +112,14 @@ const routes = [
     ],
   },
   {
-    path: '/subject',
-    name: 'Subject',
-    component: StudentLayout,
+    path: '/reports',
+    name: 'reports',
+    component: AdminLayout,
     children: [
       {
         path: '',
-        name: 'StudentList',
-        component: () => import('../views/StudentViews/Subject.vue'),
-      },
-    ],
-  },
-  {
-    path: '/subjectTest/:subjectId',
-    name: 'SubjectTest',
-    component: StudentLayout,
-    children: [
-      {
-        path: '',
-        name: 'SubjectList',
-        component: () => import('../views/StudentViews/SubjectTest.vue'),
-        props: true, 
-        key: (route) => route.params.id,
+        name: 'reportsList',
+        component: () => import('../views/adminViews/reportListView.vue'),
       },
     ],
   },

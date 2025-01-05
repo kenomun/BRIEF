@@ -115,90 +115,69 @@ const getTestById = async (req, res) => {
   }
 };
 
-
-// Actualizar un test con preguntas, respuestas y contenido
-const updateTest = async (req, res) => {
-  const { id } = req.params;
-  const { testName, subjectId, questions } = req.body;
-
-  try {
-    // Verificar si el test existe
-    const testExists = await prisma.test.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-      include: {
-        Questions: {
-          include: {
-            content: true,
-            Answers: true,
-          }
-        },
-        Subject: true,
-      }
-    });
-
-    if (!testExists) {
-      return res.status(404).json({ error: 'Test no encontrado.' });
-    }
-
     // Actualizar el test
-    const updatedTest = await prisma.test.update({
-      where: {
-        id: parseInt(id),
-      },
-      data: {
-        name: testName,
-        Subject: {
-          connect: { id: subjectId },
-        },
-        Questions: {
-          update: questions.map((question) => ({
-            where: {
-              id: question.id,
+    const updateTest = async (req, res) => {
+      const { id } = req.params;
+      const { testName, subjectId, questions } = req.body;
+    
+      try {
+        // Verificar si el test existe
+        const testExists = await prisma.test.findUnique({ where: { id: parseInt(id) } });
+    
+        if (!testExists) return res.status(404).json({ error: 'Test no encontrado.' });
+    
+        // Actualizar el test
+        const updatedTest = await prisma.test.update({
+          where: {
+            id: parseInt(id),
+          },
+          data: {
+            name: testName,
+            Subject: {
+              connect: { id: subjectId },
             },
-            data: {
-              question: question.question,
-              content: {
-                update: {
-                  description: question.contentDescription,
+            Questions: {
+              update: questions.map((question) => ({
+                where: {
+                  id: question.id,
                 },
-              },
-              Answers: {
-                update: question.Answers.map((answer) => ({
-                  where: {
-                    id: answer.id,
+                data: {
+                  question: question.question,
+                  content: {
+                    update: {
+                      description: question.contentDescription,
+                    },
                   },
-                  data: {
-                    answer: answer.answer,
-                    isCorrect: answer.isCorrect,
-                  }
-                }))
-              }
-            }
-          }))
-        }
-      },
-      include: {
-        Subject: true,
-        Questions: {
+                  Answers: {
+                    deleteMany: {},
+                    create: question.answers.map((answer) => ({
+                      answer: answer.answer,
+                      isCorrect: answer.isCorrect,
+                    })),
+                  },
+                },
+              })),
+            },
+          },
           include: {
-            content: true,
-            Answers: true,
-          }
-        },
+            Subject: true,
+            Questions: {
+              include: {
+                content: true,
+                Answers: true,
+              },
+            },
+          },
+        });
+    
+        return res.status(200).json(updatedTest);
+    
+      } catch (error) {
+        console.error("Error al actualizar el test:", error);
+        return res.status(500).json({ error: "Error al actualizar el test." });
       }
-    });
-
-    return res.status(200).json(updatedTest);
-
-  } catch (error) {
-    console.error("Error al actualizar el test:", error);
-    return res.status(500).json({ error: "Error al actualizar el test." });
-  }
-};
-
-
+    };
+  
 
 
 //Buscar todos los test por asignatura

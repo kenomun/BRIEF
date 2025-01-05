@@ -1,0 +1,42 @@
+[
+    {
+      "id": 1,
+      "profile": {
+        "name": "Juan Pérez"
+      },
+      "Subject": {
+        "name": "Matemáticas"
+      },
+      "puntaje": 85
+    },
+    {
+      "id": 2,
+      "profile": {
+        "name": "Ana Gómez"
+      },
+      "Subject": {
+        "name": "Historia"
+      },
+      "puntaje": 92
+    },
+    {
+      "id": 3,
+      "profile": {
+        "name": "Carlos Sánchez"
+      },
+      "Subject": {
+        "name": "Física"
+      },
+      "puntaje": 78
+    },
+    {
+      "id": 4,
+      "profile": {
+        "name": "María López"
+      },
+      "Subject": {
+        "name": "Biología"
+      },
+      "puntaje": 88
+    }
+  ]
