@@ -3,9 +3,9 @@
       <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de Estudiantes</h1>
       <FormButtonComponent
         class="mt-6"
-        buttonText="Crear Profesor"
-        formTitle="Nuevo Profesor"
-        formButtonText="Crear Profesor"
+        buttonText="Crear Estudiante"
+        formTitle="Nuevo Estudiante"
+        formButtonText="Crear Estudiante"
         :fields="['name', 'email']"
         :entity="{}"
         @openForm="openFormCreate"
@@ -15,7 +15,8 @@
         :headers="headers"
         :rows="rows"
         :actions="true"
-        @edit="openFomrEdit"
+        :actionType="'edit'"
+        @edit="openFormEdit"
         @delete="handleDelete"
       />
   
@@ -37,8 +38,8 @@
       <AlertModal
         v-if="alertVisible"
         :show="alertVisible"
-        title="Eliminar Administrador"
-        message="¿Estás seguro de que deseas eliminar este administrador? Esta acción no se puede deshacer."
+        title="Eliminar estudiante"
+        message="¿Estás seguro de que deseas eliminar este estudiante? Esta acción no se puede deshacer."
         @confirm="confirmDelete"
         @cancel="cancelDelete"
       />
@@ -164,7 +165,7 @@
         this.handleCreate(student);
       }
     },
-      openFomrEdit(student) {
+    openFormEdit(student) {
         this.isEditing = true; 
         this.studentToEdit = { ...student };
         this.formTitle = "Editar Estudiante";

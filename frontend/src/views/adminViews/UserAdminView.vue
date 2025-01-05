@@ -15,6 +15,7 @@
       :headers="headers"
       :rows="rows"
       :actions="true"
+      :actionType="'edit'"
       @edit="openFomrEdit"
       @delete="handleDelete"
     />
