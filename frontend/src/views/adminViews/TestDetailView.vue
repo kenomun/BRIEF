@@ -22,11 +22,7 @@
 
       <!-- Preguntas -->
       <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-4">Preguntas:</h2>
-      <div
-        v-for="question in test.Questions"
-        :key="question.id"
-        class="border-b border-gray-200 pb-4 mb-4"
-      >
+      <div v-for="question in test.Questions" :key="question.id" class="border-b border-gray-200 pb-4 mb-4">
         <!-- Pregunta -->
         <p class="text-lg font-semibold text-gray-700">
           <span class="font-bold">Pregunta:</span> {{ question.question }}
@@ -40,12 +36,8 @@
         <!-- Respuestas -->
         <p class="font-bold text-gray-700 mt-2">Respuestas:</p>
         <ul class="list-disc list-inside mt-2">
-          <li
-            v-for="answer in question.Answers"
-            :key="answer.id"
-            :class="{ 'font-bold text-green-600': answer.isCorrect }"
-            class="text-gray-800"
-          >
+          <li v-for="answer in question.Answers" :key="answer.id"
+            :class="{ 'font-bold text-green-600': answer.isCorrect }" class="text-gray-800">
             {{ answer.answer }}
           </li>
         </ul>
@@ -65,57 +57,50 @@
 </template>
 
 <script>
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router"; 
+import { useRoute, useRouter } from "vue-router";
 
 export default {
   setup() {
-    // Definimos las propiedades reactivas con ref
-    const test = ref(null);  
-    const loading = ref(true);  
-    const route = useRoute();  
-    const router = useRouter();  
+    const test = ref(null);
+    const loading = ref(true);
+    const route = useRoute();
+    const router = useRouter();
+    const id = ref(route.params.id);
 
-    // Función para obtener los detalles del test
     const loadTestData = async (id) => {
       console.log("Llamando a la API con ID:", id);  // Depuración
       try {
         const response = await axios.get(`http://localhost:5000/api/test/${id}`);
-        console.log("Datos del test:", response.data);  
-        test.value = response.data;  
+        console.log("Datos del test:", response.data);
+        test.value = response.data;
       } catch (error) {
         console.error("Error al obtener los detalles del test:", error);
       } finally {
-        loading.value = false;  
+        loading.value = false;
       }
     };
 
-    // Función de inicialización
-    const init = async () => {
-      const testId = route.params.id;
-      console.log("Cargando test con ID:", testId);  // Depuración
-
-      if (testId) {
-        await loadTestData(testId);  // Aseguramos que los datos sean cargados
-      } else {
-        console.error("ID de test no válido");
-      }
+    const init = async (id) => {
+      console.log('first');
+      console.log("Cargando test con ID:", id);  // Depuración
+      await loadTestData(id);
     };
 
-    // Llamamos a init cuando el componente se monta
     onMounted(() => {
-      nextTick(() => {
-        init(); // Aseguramos que el componente esté completamente montado
-      });
+      init(id.value);
     });
 
-    // Método para navegar hacia atrás
+    watch(() => route.params.id, (newId) => {
+      id.value = newId;
+      init(newId);
+    });
+
     const goBack = () => {
-      router.go(-1);  
+      router.go(-1);
     };
 
-    // Retornamos los valores
     return {
       test,
       loading,
@@ -123,6 +108,7 @@ export default {
     };
   },
 };
+
 </script>
 
 <style scoped>
@@ -130,6 +116,7 @@ export default {
 .btn {
   @apply px-4 py-2 rounded shadow text-white;
 }
+
 .btn-secondary {
   @apply bg-gray-500 hover:bg-gray-600 transition-all duration-200;
 }

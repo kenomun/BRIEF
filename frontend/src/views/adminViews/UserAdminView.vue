@@ -1,59 +1,26 @@
 <template>
   <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Lista de Administradores</h1>
-    <FormButtonComponent
-      class="mt-6"
-      buttonText="Crear Administrador"
-      formTitle="Nuevo Administrador"
-      formButtonText="Crear administrador"
-      :fields="['name', 'email']"
-      :entity="{}"
-      @openForm="openFormCreate"
-    />
-    <Table
-      class="mt-6"
-      :headers="headers"
-      :rows="rows"
-      :actions="true"
-      :actionType="'edit'"
-      @edit="openFomrEdit"
-      @delete="handleDelete"
-    />
+    <FormButtonComponent class="mt-6" buttonText="Crear Administrador" formTitle="Nuevo Administrador"
+      formButtonText="Crear administrador" :fields="['name', 'email']" :entity="{}" @openForm="openFormCreate" />
+    <Table class="mt-6" :headers="headers" :rows="rows" :actions="true" :options="option"
+      @actionSelect="handleAction" />
 
-    <button 
-    type="button"
-    @click="goBack" 
-    class=" mt-10 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Volver</button>
+    <button type="button" @click="goBack"
+      class=" mt-10 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Volver</button>
 
     <!-- Componente de Toast -->
-    <Toast
-      v-if="toastVisible"
-      :message="toastMessage"
-      :type="toastType"
-      :duration="3000"
-      @closed="toastVisible = false"
-    />
+    <Toast v-if="toastVisible" :message="toastMessage" :type="toastType" :duration="3000"
+      @closed="toastVisible = false" />
 
     <!-- Modal de Confirmación de Eliminación -->
-    <AlertModal
-      v-if="alertVisible"
-      :show="alertVisible"
-      title="Eliminar Administrador"
+    <AlertModal v-if="alertVisible" :show="alertVisible" title="Eliminar Administrador"
       message="¿Estás seguro de que deseas eliminar este administrador? Esta acción no se puede deshacer."
-      @confirm="confirmDelete"
-      @cancel="cancelDelete"
-    />
+      @confirm="confirmDelete" @cancel="cancelDelete" />
 
     <!-- Formulario de edición de administrador -->
-    <FormComponent
-      v-if="formModalVisible"
-      :entity="adminToEdit"
-      :formTitle="formTitle"
-      :formButtonText="formButtonText"
-      :fields="adminFields"
-      @save="handleFormSave"
-      @cancel="handleCancel"
-    />
+    <FormComponent :isVisible="formModalVisible" :entity="adminToEdit" :formTitle="formTitle" :formButtonText="formButtonText"
+      :fields="adminFields" @save="handleFormSave" @cancel="handleCancel" />
   </div>
 </template>
 
@@ -90,35 +57,39 @@ export default {
       formButtonText: "",
       adminToEdit: null,
       isEditing: false,
+      option: [
+        { label: "Eliminar", class: "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition duration-300", action: "delete" },
+        { label: "Editar", class: "ml-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition duration-300 mr-2", action: "edit" },
+      ],
       adminFields: [
-      { name: 'name', type: 'text', label: 'Nombre', placeholder: 'Nombre del administrador' },
-      { name: 'email', type: 'email', label: 'Correo Electrónico', placeholder: 'Correo electrónico' }
-    ],
+        { name: 'name', type: 'text', label: 'Nombre', placeholder: 'Nombre del administrador' },
+        { name: 'email', type: 'email', label: 'Correo Electrónico', placeholder: 'Correo electrónico' }
+      ],
     };
   },
- 
+
   async created() {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admins`);
-        const admins = response.data.filter((user) => user.roleId === 2);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admins`);
+      const admins = response.data.filter((user) => user.roleId === 2);
 
-        // Determina dinámicamente los encabezados en base a los datos
-        this.headers = [
-          { key: "name", label: "Nombre" },
-          { key: "email", label: "Correo Electrónico" },
-        ];
+      // Determina dinámicamente los encabezados en base a los datos
+      this.headers = [
+        { key: "name", label: "Nombre" },
+        { key: "email", label: "Correo Electrónico" },
+      ];
 
-        // Transforma los datos de los profesores en el formato necesario
-        this.rows = admins.map((admin) => ({
-          id: admin.id,
-          name: admin.name,
-          email: admin.email,
-          roleId: admin.roleId
-        }));
-      } catch (error) {
-        console.error("Error al obtener los administadores:", error);
-      }
-    },
+      // Transforma los datos de los profesores en el formato necesario
+      this.rows = admins.map((admin) => ({
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+        roleId: admin.roleId
+      }));
+    } catch (error) {
+      console.error("Error al obtener los administadores:", error);
+    }
+  },
   methods: {
 
     goBack() {
@@ -126,35 +97,43 @@ export default {
     },
 
     getTableHeaders() {
-        if (!this.admins || this.admins.length === 0) return [];
-        
-        // Obtén las claves del primer objeto para generar encabezados
-        const headers = Object.keys(this.admins[0]).map(key => ({
-          label: this.formatHeaderLabel(key), // Formatear etiquetas (opcional)
-          key: key
-        }));
+      if (!this.admins || this.admins.length === 0) return [];
 
-        // Agrega las columnas de acción si es necesario
-        if (this.actions) {
-          headers.push({ label: "Acciones", key: "actions" });
-        }
-        return headers;
-      },
+      // Obtén las claves del primer objeto para generar encabezados
+      const headers = Object.keys(this.admins[0]).map(key => ({
+        label: this.formatHeaderLabel(key), // Formatear etiquetas (opcional)
+        key: key
+      }));
+
+      // Agrega las columnas de acción si es necesario
+      if (this.actions) {
+        headers.push({ label: "Acciones", key: "actions" });
+      }
+      return headers;
+    },
 
 
     handleFormSave(admin) {
-    if (this.isEditing) {
-      this.handleSave(admin);
-    } else {
-      this.handleCreate(admin);
-    }
-  },
+      if (this.isEditing) {
+        this.handleSave(admin);
+      } else {
+        this.handleCreate(admin);
+      }
+    },
     openFomrEdit(admin) {
-      this.isEditing = true; 
+      this.isEditing = true;
       this.adminToEdit = { ...admin };
       this.formTitle = "Editar Administrador";
       this.formButtonText = "Guardar Cambios";
       this.formModalVisible = true;
+    },
+
+    handleAction(data, actionId) {
+      if (actionId === 1) {
+        this.openFomrEdit(data)
+      } else if (actionId === 3) {
+        this.handleDelete(data);
+      }
     },
 
     openFormCreate(data) {
@@ -276,5 +255,3 @@ export default {
 <style scoped>
 /* Estilos personalizados si es necesario */
 </style>
-
-
