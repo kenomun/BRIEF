@@ -222,13 +222,22 @@ export default {
     },
     async confirmDelete() {
       try {
-        await axios.delete(`${API_BASE_URL}/admin/${this.adminToDelete.id}`);
-        this.admins = this.admins.filter((a) => a.id !== this.adminToDelete.id);
-        this.alertVisible = false;
-        this.toastMessage = `Administrador ${this.adminToDelete.name} eliminado correctamente.`;
-        this.toastType = "success";
-        await this.loadAdmins();
-        this.toastVisible = true;
+        const response = await axios.delete(`${API_BASE_URL}/admin/${this.adminToDelete.id}`);
+        if(response.status = 200) {
+          this.alertVisible = false;
+          this.toastMessage = `Administrador ${this.adminToDelete.name} eliminado correctamente.`;
+          this.toastType = "success";
+          await this.loadAdmins();
+          this.toastVisible = true;
+        } else {
+          this.alertVisible = false;
+          this.toastMessage = `Ocurrió un error al intentar eliminar al administrador.`;
+          this.toastType = "success";
+          await this.loadAdmins();
+          this.toastVisible = true;
+
+        }
+        
       } catch (error) {
         this.toastMessage = "Ocurrió un error al intentar eliminar al administrador.";
         this.toastType = "error";

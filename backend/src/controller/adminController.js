@@ -67,30 +67,24 @@ const getAdminById = async (req, res) => {
 };
 
 // Actualizar un admin
-const updateAdmin = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, email, password, roleId } = req.body;
+  const updateAdmin = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, email } = req.body;
+  
+      const checkAdmin = await prisma.profiles.findUnique({ where: { id: parseInt(id) } });
+      if (!checkAdmin)  return res.status(404).json({ message: 'Admin no encontrado' });
+      const updatedAdmin = await prisma.profiles.update({
+        where: { id: parseInt(id) },
+        data: { name, email },
+      });
 
-    const role = await prisma.Roles.findUnique({
-      where: { id: roleId },
-    });
-
-    if (!role) {
-      return res.status(404).json({ message: 'Rol no encontrado' });
-    }
-
-    const updatedAdmin = await prisma.Profiles.update({
-      where: { id: parseInt(id) },
-      data: { name, email, password, roleId },
-    });
-
-    res.status(200).json({ updatedAdmin, message: 'Admin actualizado' });
-  } catch (error) {
-    res.status(500).json({ message: 'Admin no encontrado' });
-  }
-};
-
+      res.status(200).json({ updatedAdmin, message: 'Admin actualizado' });
+    } catch (error) {
+      res.status(500).json({ message: 'erro al actualizar el admin', error});
+    }
+  };
+  
 // Eliminar un admin
 const deleteAdmin = async (req, res) => {
   try {

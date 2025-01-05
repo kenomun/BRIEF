@@ -55,6 +55,19 @@
             />
           </div>
   
+          <!-- Contenido adicional para la pregunta -->
+          <div class="mb-2">
+            <label :for="'content-' + index" class="block text-sm font-medium text-gray-700">
+              Contenido de la pregunta (opcional)
+            </label>
+            <textarea
+              v-model="question.content"
+              :id="'content-' + index"
+              placeholder="Agrega un contenido adicional"
+              class="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+            ></textarea>
+          </div>
+  
           <div v-for="(answer, answerIndex) in question.answers" :key="answerIndex" class="mb-2">
             <label :for="'answer-' + index + '-' + answerIndex" class="block text-sm font-medium text-gray-700">
               Respuesta {{ answerIndex + 1 }}
@@ -124,21 +137,20 @@
         type: Object,
         default: () => ({
           name: '',
-          subjectId: null, // Cambiar 'subject' a 'subjectId'
+          subjectId: null, 
           content: '',
           questions: [
-            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0 },
-            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0 },
-            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0 },
-            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0 },
-            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0 },
+            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
+            { questionText: '', answers: ['', '', '', ''], correctAnswer: 0, content: '' },
           ],
         }),
       },
     },
     data() {
       return {
-        // Lista de asignaturas disponibles
         subjects: [
           { id: 1, name: 'Matemáticas' },
           { id: 2, name: 'Lengua y Literatura' },
@@ -151,7 +163,7 @@
         ],
         basicFields: [
           { name: 'name', type: 'text', label: 'Nombre', placeholder: 'Nombre del test' },
-          { name: 'subject', type: 'text', label: 'Asignatura', placeholder: 'Asignatura del test' }, // Este campo será un select
+          { name: 'subject', type: 'text', label: 'Asignatura', placeholder: 'Asignatura del test' },
           { name: 'content', type: 'text', label: 'Contenido', placeholder: 'Contenido del test' },
         ],
         testData: { ...this.testToEdit },
@@ -159,32 +171,28 @@
     },
     methods: {
         handleFormSave() {
-  const formattedData = {
-    testName: this.testData.name,  // El nombre del test
-    subjectId: this.testData.subjectId,  // El ID de la asignatura
-    questions: this.testData.questions.map(question => ({
-      question: question.questionText,  // El texto de la pregunta
-      content: { description: question.content || '' },  // El contenido (puedes agregar un campo de contenido si es necesario)
-      answers: question.answers.map((answer, index) => ({
-        answer: answer,  // El texto de la respuesta
-        isCorrect: question.correctAnswer === index  // Marcar la respuesta correcta
+    const formattedData = {
+      testName: this.testData.name,  // El nombre del test
+      subjectId: this.testData.subjectId,  // El ID de la asignatura
+      questions: this.testData.questions.map(question => ({
+        question: question.questionText,  // El texto de la pregunta
+        content: {
+          description: question.content || ''  // El contenido (puedes agregar un campo de contenido si es necesario)
+        },
+        answers: question.answers.map((answer, index) => ({
+          answer: answer,  // El texto de la respuesta
+          isCorrect: question.correctAnswer === index  // Marcar la respuesta correcta
+        }))
       }))
-    }))
-  };
+    };
 
-  console.log('Datos formateados para el backend:', formattedData);
-
-  // Aquí enviarás la data al backend para guardarla
-  this.$emit('save', formattedData);
-},
-      cancelForm() {
-        this.$emit('cancel');
-      },
+    // Aquí enviarás la data al backend para guardarla
+    this.$emit('save', formattedData);
+  },
+  cancelForm() {
+    this.$emit('cancel');
+  },
     },
   };
   </script>
-  
-  <style scoped>
-  /* Aquí puedes agregar estilos específicos para el formulario de test */
-  </style>
   

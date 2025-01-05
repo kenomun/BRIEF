@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { sendOk, badRequest } = require('../helpers/http') 
 
 // Crear un Test con Preguntas y Respuestas
 const createTest = async (req, res) => {
@@ -49,7 +50,8 @@ const createTest = async (req, res) => {
       },
     });
 
-    res.status(201).json(test);
+    // res.status(201).json(test);
+    return sendOk(res, 'test guardado', test)
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al crear el test', details: error.message });
@@ -236,10 +238,6 @@ const getTestsBySubjectId = async (req, res) => {
     res.status(500).json({ error: 'Error al buscar los tests por asignatura', details: error.message });
   }
 };
-
-
-
-
 
 
 

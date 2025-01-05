@@ -137,11 +137,10 @@ export default {
     },
     openTestDetails(test) {
       console.log("aqui",test.id)
-      this.$router.push({ name: "Users" });
+      this.$router.push({ name: "testDetail", params :{ id : test.id} });
     },
 
     openFormCreate() {
-      console.log("wger")
       this.formModalVisible = true;
       this.testToEdit = {
         name: '',
@@ -163,13 +162,23 @@ export default {
     },
     async confirmDeleteTest() {
       try {
-        await axios.delete(`${API_BASE_URL}/test/${this.testToDelete.id}`);
-        this.alertVisible = false;
-        this.toastMessage = `Test "${this.testToDelete.name}" eliminado correctamente.`;
-        this.toastType = "success";
-        this.toastVisible = true;
-        await this.loadTests();
+        const response = await axios.delete(`${API_BASE_URL}/test/${this.testToDelete.id}`);
+        if (response.status == 200) {
+          this.alertVisible = false;
+          this.toastMessage = `Test "${this.testToDelete.name}" eliminado correctamente.`;
+          this.toastType = "success";
+          this.loadTest()
+          this.toastVisible = true;
+        } else {
+          this.alertVisible = false;
+          this.toastMessage = `Ocurrió un error al intentar eliminar el test.`;
+          this.toastType = "error";
+          this.loadTest()
+          this.toastVisible = true;
+        }
+        
       } catch (error) {
+        console.log("ERROR", error)
         this.toastMessage = "Ocurrió un error al intentar eliminar el test.";
         this.toastType = "error";
         this.toastVisible = true;
@@ -179,33 +188,41 @@ export default {
     async handleSave(testData) {
       try {
       
-        const formattedData = {
-          testName: testData.name, 
-          subjectId: testData.subjectId, 
+        const payload = {
+          testName: testData.testName,
+          subjectId: testData.subjectId,
           questions: testData.questions.map(question => ({
-            question: question.questionText,
-            content: { description: question.content || '' },
+            question: question.question,
+            content: { description: question.content.description || '' },
             answers: question.answers.map((answer, index) => ({
-              answer: answer,
+              answer: answer.answer,
               isCorrect: question.correctAnswer === index
             }))
           }))
         };
 
-        console.log('Datos formateados para el backend:', formattedData);
+        const response = await axios.post(`${API_BASE_URL}/tests`, payload);
 
-        const response = await axios.post(`${API_BASE_URL}/tests', ${formattedData}`);
+        console.log(response)
+        if (response.status == 200) {
+          console.log("guardo")
+          await this.loadTest();
+          this.toastMessage = `Test ${updatedStudent.name} guardado correctamente.`;
+          this.toastType = "success";
+          this.toastVisible = true;
+          this.formModalVisible = false;
+        } else {
+          console.log("error")
+          this.toastMessage = `Error al guardar Test.`;
+          this.toastType = "error";
+          this.toastVisible = true;
 
-        console.log('Test guardado con éxito:', response.data);
+          // this.formModalVisible = false;
 
-        this.toastMessage = `Administrador ${updatedStudent.name} actualizado correctamente.`;
-        this.toastType = "success";
-        this.toastVisible = true;
-        await this.loadTest();
-        this.formModalVisible = false;
+        }
 
       } catch (error) {
-        this.toastMessage = "Ocurrió un error al intentar crear.";
+        this.toastMessage = "Error al guardar Test.";
         this.toastType = "error";
         this.toastVisible = true;
       }
@@ -228,7 +245,7 @@ export default {
       },
 
 
-      async loadTest() {
+    async loadTest() {
       try {
         const response = await axios.get(`${API_BASE_URL}/tests`);
         this.tests = response.data;
