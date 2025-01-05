@@ -109,7 +109,19 @@ const routes = [
         key: (route) => route.params.id, // Usar el id como key para forzar la recreación
       },
     ],
-  }
+  },
+  {
+    path: '/reports',
+    name: 'reports',
+    component: AdminLayout,
+    children: [
+      {
+        path: '',
+        name: 'reportsList',
+        component: () => import('../views/adminViews/reportListView.vue'),
+      },
+    ],
+  },
   
 ];
 
